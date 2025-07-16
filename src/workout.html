@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Workout</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+</head>
+<body>
+<header>
+    <h1>Workout</h1>
+    <div class="nav-buttons">
+        <a href="../index.html" class="btn">Home</a>
+        <a href="create.html" class="btn">Create Workout</a>
+        <a href="choose.html" class="btn">Choose Workout</a>
+    </div>
+</header>
+<div class="container">
+    <h2 id="routineTitle"></h2>
+    <div id="currentExercise"></div>
+    <button id="doneBtn">Done</button>
+</div>
+<script src="app.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const id = params.get('id');
+const routine = routines.find(r => r.id === id);
+const titleEl = document.getElementById('routineTitle');
+const currentEl = document.getElementById('currentExercise');
+const doneBtn = document.getElementById('doneBtn');
+
+let index = 0;
+let startTime = Date.now();
+let records = [];
+let exerciseStart = startTime;
+
+function showExercise() {
+    if (!routine || index >= routine.exercises.length) {
+        finish();
+        return;
+    }
+    const ex = routine.exercises[index];
+    titleEl.textContent = routine.name;
+    currentEl.innerHTML = `<h3>${ex.type}</h3>` +
+        `<p>Sets: ${ex.sets} Reps: <input type='number' id='reps' value='${ex.reps}'>`+
+        ` Weight: <input type='number' id='weight' value='${ex.weight}'></p>` +
+        `<p>Rest: ${ex.rest}s</p>`;
+}
+
+doneBtn.onclick = () => {
+    const reps = parseInt(document.getElementById('reps').value,10);
+    const weight = parseFloat(document.getElementById('weight').value);
+    const now = Date.now();
+    const ex = routine.exercises[index];
+    records.push({type:ex.type,reps,weight,start:exerciseStart,end:now,rest:ex.rest});
+    index++;
+    exerciseStart = Date.now();
+    if (index < routine.exercises.length) {
+        showExercise();
+    } else {
+        finish();
+    }
+};
+
+function finish() {
+    const totalTime = Date.now() - startTime;
+    addWorkoutLog({routineId:routine.id,date:new Date().toISOString(),records,totalTime});
+    window.location.href = 'summary.html';
+}
+
+showExercise();
+</script>
+</body>
+</html>
