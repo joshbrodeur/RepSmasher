@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Create Workout</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+</head>
+<body>
+<header>
+    <h1>Create Workout</h1>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="create.html">Create Workout</a>
+        <a href="choose.html">Choose Workout</a>
+    </nav>
+</header>
+<div class="container">
+    <label>Name: <input type="text" id="routineName"></label>
+    <button id="addExercise">Add Exercise</button>
+    <ul id="exerciseList" class="list"></ul>
+    <button id="saveRoutine">Save Routine</button>
+</div>
+<script src="app.js"></script>
+<script>
+let exercises = [];
+
+function renderList() {
+    const list = document.getElementById('exerciseList');
+    list.innerHTML = '';
+    exercises.forEach((ex, idx) => {
+        const li = document.createElement('li');
+        li.draggable = true;
+        li.dataset.idx = idx;
+        li.innerHTML = `${ex.type} - ${ex.sets}x${ex.reps} @ ${ex.weight}kg - rest ${ex.rest}s`;
+        li.addEventListener('dragstart', drag);
+        li.addEventListener('dragover', allowDrop);
+        li.addEventListener('drop', drop);
+        list.appendChild(li);
+    });
+}
+
+function drag(ev) { ev.dataTransfer.setData('text', ev.target.dataset.idx); }
+function allowDrop(ev) { ev.preventDefault(); }
+function drop(ev) {
+    ev.preventDefault();
+    const from = +ev.dataTransfer.getData('text');
+    const to = +ev.target.dataset.idx;
+    const item = exercises.splice(from, 1)[0];
+    exercises.splice(to, 0, item);
+    renderList();
+}
+
+document.getElementById('addExercise').onclick = () => {
+    const type = prompt('Exercise name');
+    const sets = parseInt(prompt('Sets'),10) || 1;
+    const reps = parseInt(prompt('Reps'),10) || 1;
+    const weight = parseFloat(prompt('Weight (kg)'),10) || 0;
+    const rest = parseInt(prompt('Rest seconds'),10) || 0;
+    if (type) {
+        exercises.push({type, sets, reps, weight, rest});
+        renderList();
+    }
+};
+
+document.getElementById('saveRoutine').onclick = () => {
+    const name = document.getElementById('routineName').value || 'Routine';
+    const routine = {id:createId(), name, exercises};
+    saveRoutine(routine);
+    window.location.href = 'index.html';
+};
+
+renderList();
+</script>
+</body>
+</html>

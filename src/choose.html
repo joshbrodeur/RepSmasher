@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Choose Workout</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+</head>
+<body>
+<header>
+    <h1>Choose Workout</h1>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="create.html">Create Workout</a>
+        <a href="choose.html">Choose Workout</a>
+    </nav>
+</header>
+<div class="container">
+    <ul id="routineList" class="list"></ul>
+</div>
+<script src="app.js"></script>
+<script>
+function renderRoutines() {
+    const list = document.getElementById('routineList');
+    list.innerHTML = '';
+    routines.forEach(r => {
+        const li = document.createElement('li');
+        li.textContent = r.name;
+        li.onclick = () => {
+            window.location.href = `workout.html?id=${r.id}`;
+        };
+        list.appendChild(li);
+    });
+}
+
+renderRoutines();
+</script>
+</body>
+</html>
