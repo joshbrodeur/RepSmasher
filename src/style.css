@@ -36,6 +36,15 @@ button {
     cursor: move;
 }
 
+.inputs {
+    margin: 10px 0;
+}
+
+.inputs input {
+    margin-right: 5px;
+    padding: 5px;
+}
+
 .stats {
     margin-bottom: 15px;
 }
