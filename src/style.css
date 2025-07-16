@@ -34,6 +34,17 @@ button {
     background: #f0f0f0;
     margin-bottom: 5px;
     cursor: move;
+    display: flex;
+    align-items: center;
+}
+
+.list li span {
+    flex-grow: 1;
+}
+
+.list li button {
+    margin-left: 5px;
+    cursor: pointer;
 }
 
 .inputs {

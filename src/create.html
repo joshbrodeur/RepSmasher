@@ -33,10 +33,24 @@
 
     <ul id="exerciseList" class="list"></ul>
     <button id="saveRoutine">Save Routine</button>
+    <button id="deleteRoutine" style="display:none">Delete Routine</button>
 </div>
 <script src="app.js"></script>
 <script>
+const params = new URLSearchParams(location.search);
+const editId = params.get('id');
 let exercises = [];
+let editing = false;
+
+if (editId) {
+    const found = routines.find(r => r.id === editId);
+    if (found) {
+        editing = true;
+        document.getElementById('routineName').value = found.name;
+        exercises = JSON.parse(JSON.stringify(found.exercises));
+        document.getElementById('deleteRoutine').style.display = 'inline-block';
+    }
+}
 
 function renderList() {
     const list = document.getElementById('exerciseList');
@@ -91,9 +105,17 @@ document.getElementById('addRest').onclick = () => {
 
 document.getElementById('saveRoutine').onclick = () => {
     const name = document.getElementById('routineName').value || 'Routine';
-    const routine = {id:createId(), name, exercises};
+    const routine = {id: editing ? editId : createId(), name, exercises};
     saveRoutine(routine);
     window.location.href = 'index.html';
+};
+
+document.getElementById('deleteRoutine').onclick = () => {
+    if(editing && confirm('Delete this routine?')) {
+        routines = routines.filter(r => r.id !== editId);
+        save('routines', routines);
+        window.location.href = 'index.html';
+    }
 };
 
 renderList();

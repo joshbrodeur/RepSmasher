@@ -25,10 +25,34 @@ function renderRoutines() {
     list.innerHTML = '';
     routines.forEach(r => {
         const li = document.createElement('li');
-        li.textContent = r.name;
-        li.onclick = () => {
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = r.name;
+        nameSpan.style.cursor = 'pointer';
+        nameSpan.onclick = () => {
             window.location.href = `workout.html?id=${r.id}`;
         };
+        li.appendChild(nameSpan);
+
+        const editBtn = document.createElement('button');
+        editBtn.textContent = 'Edit';
+        editBtn.onclick = (ev) => {
+            ev.stopPropagation();
+            window.location.href = `create.html?id=${r.id}`;
+        };
+        li.appendChild(editBtn);
+
+        const delBtn = document.createElement('button');
+        delBtn.textContent = 'Delete';
+        delBtn.onclick = (ev) => {
+            ev.stopPropagation();
+            if(confirm('Delete this routine?')) {
+                routines = routines.filter(rt => rt.id !== r.id);
+                save('routines', routines);
+                renderRoutines();
+            }
+        };
+        li.appendChild(delBtn);
+
         list.appendChild(li);
     });
 }
