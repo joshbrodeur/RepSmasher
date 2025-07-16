@@ -1,0 +1,20 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    margin-top: 50px;
+}
+
+#counter {
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.tagline {
+    font-size: 20px;
+    margin: 10px 0 30px;
+}
+
+#repButton {
+    padding: 10px 20px;
+    font-size: 18px;
+}
