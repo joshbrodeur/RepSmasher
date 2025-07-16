@@ -17,7 +17,20 @@
 </header>
 <div class="container">
     <label>Name: <input type="text" id="routineName"></label>
-    <button id="addExercise">Add Exercise</button>
+
+    <div class="inputs">
+        <input type="text" id="exName" placeholder="Exercise name">
+        <input type="number" id="exReps" placeholder="Reps" min="0">
+        <input type="number" id="exWeight" placeholder="Weight" min="0" step="0.1">
+        <input type="number" id="exSets" placeholder="Sets" min="1" value="1">
+        <button id="addExercise">Add Exercise</button>
+    </div>
+
+    <div class="inputs">
+        <input type="number" id="restSeconds" placeholder="Rest seconds" min="0" value="30">
+        <button id="addRest">Add Rest Set</button>
+    </div>
+
     <ul id="exerciseList" class="list"></ul>
     <button id="saveRoutine">Save Routine</button>
 </div>
@@ -32,7 +45,11 @@ function renderList() {
         const li = document.createElement('li');
         li.draggable = true;
         li.dataset.idx = idx;
-        li.innerHTML = `${ex.type} - ${ex.sets}x${ex.reps} @ ${ex.weight}kg - rest ${ex.rest}s`;
+        if (ex.restSet) {
+            li.textContent = `Rest - ${ex.rest}s`;
+        } else {
+            li.textContent = `${ex.type} - ${ex.sets}x${ex.reps} @ ${ex.weight}kg`;
+        }
         li.addEventListener('dragstart', drag);
         li.addEventListener('dragover', allowDrop);
         li.addEventListener('drop', drop);
@@ -52,15 +69,24 @@ function drop(ev) {
 }
 
 document.getElementById('addExercise').onclick = () => {
-    const type = prompt('Exercise name');
-    const sets = parseInt(prompt('Sets'),10) || 1;
-    const reps = parseInt(prompt('Reps'),10) || 1;
-    const weight = parseFloat(prompt('Weight (kg)'),10) || 0;
-    const rest = parseInt(prompt('Rest seconds'),10) || 0;
+    const type = document.getElementById('exName').value.trim();
+    const reps = parseInt(document.getElementById('exReps').value, 10) || 0;
+    const weight = parseFloat(document.getElementById('exWeight').value) || 0;
+    const sets = parseInt(document.getElementById('exSets').value, 10) || 1;
     if (type) {
-        exercises.push({type, sets, reps, weight, rest});
+        exercises.push({type, sets, reps, weight, rest:0});
+        document.getElementById('exName').value = '';
+        document.getElementById('exReps').value = '';
+        document.getElementById('exWeight').value = '';
+        document.getElementById('exSets').value = '1';
         renderList();
     }
+};
+
+document.getElementById('addRest').onclick = () => {
+    const rest = parseInt(document.getElementById('restSeconds').value,10) || 0;
+    exercises.push({type:'Rest', sets:1, reps:0, weight:0, rest, restSet:true});
+    renderList();
 };
 
 document.getElementById('saveRoutine').onclick = () => {

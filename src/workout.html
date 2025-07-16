@@ -41,17 +41,26 @@ function showExercise() {
     }
     const ex = routine.exercises[index];
     titleEl.textContent = routine.name;
-    currentEl.innerHTML = `<h3>${ex.type}</h3>` +
-        `<p>Sets: ${ex.sets} Reps: <input type='number' id='reps' value='${ex.reps}'>`+
-        ` Weight: <input type='number' id='weight' value='${ex.weight}'></p>` +
-        `<p>Rest: ${ex.rest}s</p>`;
+    if (ex.restSet) {
+        currentEl.innerHTML = `<h3>Rest</h3><p>Rest for ${ex.rest}s</p>`;
+        doneBtn.textContent = 'Next';
+    } else {
+        currentEl.innerHTML = `<h3>${ex.type}</h3>` +
+            `<p>Sets: ${ex.sets} Reps: <input type='number' id='reps' value='${ex.reps}'>`+
+            ` Weight: <input type='number' id='weight' value='${ex.weight}'></p>`;
+        doneBtn.textContent = 'Done';
+    }
 }
 
 doneBtn.onclick = () => {
-    const reps = parseInt(document.getElementById('reps').value,10);
-    const weight = parseFloat(document.getElementById('weight').value);
-    const now = Date.now();
     const ex = routine.exercises[index];
+    let reps = 0;
+    let weight = 0;
+    if (!ex.restSet) {
+        reps = parseInt(document.getElementById('reps').value,10);
+        weight = parseFloat(document.getElementById('weight').value);
+    }
+    const now = Date.now();
     records.push({type:ex.type,reps,weight,start:exerciseStart,end:now,rest:ex.rest});
     index++;
     exerciseStart = Date.now();
