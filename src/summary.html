@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Workout Summary</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+</head>
+<body>
+<header>
+    <h1>Workout Summary</h1>
+    <div class="nav-buttons">
+        <a href="../index.html" class="btn">Home</a>
+        <a href="create.html" class="btn">Create Workout</a>
+        <a href="choose.html" class="btn">Choose Workout</a>
+    </div>
+</header>
+<div class="container">
+    <div id="summary"></div>
+    <button onclick="window.location.href='index.html'">Back Home</button>
+</div>
+<script src="app.js"></script>
+<script>
+const last = workouts[workouts.length-1];
+const summaryEl = document.getElementById('summary');
+if (last) {
+    const routine = routines.find(r=>r.id===last.routineId) || {name:'Workout'};
+    summaryEl.innerHTML = `<h2>${routine.name}</h2>` +
+        `<p>Total time: ${(last.totalTime/1000).toFixed(1)}s</p>` +
+        last.records.map(r=> `<div>${r.type}: ${r.reps} reps @ ${r.weight}kg </div>`).join('');
+}
+updateStats();
+</script>
+</body>
+</html>
