@@ -63,3 +63,12 @@ button {
 .hidden {
     display: none;
 }
+
+.timer {
+    font-size: 2em;
+    margin: 10px 0;
+}
+
+.timer.negative {
+    color: red;
+}

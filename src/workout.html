@@ -29,6 +29,8 @@ const titleEl = document.getElementById('routineTitle');
 const currentEl = document.getElementById('currentExercise');
 const doneBtn = document.getElementById('doneBtn');
 
+let restInterval = null;
+
 let index = 0;
 let startTime = Date.now();
 let records = [];
@@ -39,11 +41,28 @@ function showExercise() {
         finish();
         return;
     }
+    if (restInterval) {
+        clearInterval(restInterval);
+        restInterval = null;
+    }
     const ex = routine.exercises[index];
     titleEl.textContent = routine.name;
     if (ex.restSet) {
-        currentEl.innerHTML = `<h3>Rest</h3><p>Rest for ${ex.rest}s</p>`;
-        doneBtn.textContent = 'Next';
+        let remaining = ex.rest;
+        currentEl.innerHTML = `<h3>Rest</h3><p>Rest for <span id="restTimer" class="timer">${remaining}</span>s</p>`;
+        doneBtn.textContent = 'Start';
+        restInterval = setInterval(() => {
+            remaining--;
+            const timerEl = document.getElementById('restTimer');
+            if (timerEl) {
+                timerEl.textContent = remaining;
+                if (remaining < 0) {
+                    timerEl.classList.add('negative');
+                } else {
+                    timerEl.classList.remove('negative');
+                }
+            }
+        }, 1000);
     } else {
         currentEl.innerHTML = `<h3>${ex.type}</h3>` +
             `<p>Sets: ${ex.sets} Reps: <input type='number' id='reps' value='${ex.reps}'>`+
@@ -53,6 +72,10 @@ function showExercise() {
 }
 
 doneBtn.onclick = () => {
+    if (restInterval) {
+        clearInterval(restInterval);
+        restInterval = null;
+    }
     const ex = routine.exercises[index];
     let reps = 0;
     let weight = 0;
