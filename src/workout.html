@@ -15,11 +15,19 @@
         <a href="choose.html">Choose Workout</a>
     </nav>
 </header>
-<div class="container">
-    <h2 id="routineTitle"></h2>
-    <div id="currentExercise"></div>
-    <button id="doneBtn">Done</button>
-</div>
+    <div class="container">
+        <div class="timer-wrapper">
+            <span id="workoutTimer" class="timer">0:00</span>
+            <button id="startBtn">Start Workout</button>
+        </div>
+        <h2 id="routineTitle"></h2>
+        <div id="currentExercise"></div>
+        <button id="doneBtn" class="hidden">Done</button>
+        <div id="progressContainer">
+            <progress id="progressBar" value="0" max="100"></progress>
+            <span id="progressText">0%</span>
+        </div>
+    </div>
 <script src="app.js"></script>
 <script>
 const params = new URLSearchParams(location.search);
@@ -28,13 +36,18 @@ const routine = routines.find(r => r.id === id);
 const titleEl = document.getElementById('routineTitle');
 const currentEl = document.getElementById('currentExercise');
 const doneBtn = document.getElementById('doneBtn');
+const timerEl = document.getElementById('workoutTimer');
+const startBtn = document.getElementById('startBtn');
+const progressBar = document.getElementById('progressBar');
+const progressText = document.getElementById('progressText');
 
 let restInterval = null;
+let timerInterval = null;
 
 let index = 0;
-let startTime = Date.now();
+let startTime = null;
 let records = [];
-let exerciseStart = startTime;
+let exerciseStart = null;
 
 function showExercise() {
     if (!routine || index >= routine.exercises.length) {
@@ -64,11 +77,15 @@ function showExercise() {
             }
         }, 1000);
     } else {
-        currentEl.innerHTML = `<h3>${ex.type}</h3>` +
-            `<p>Sets: ${ex.sets} Reps: <input type='number' id='reps' value='${ex.reps}'>`+
-            ` Weight: <input type='number' id='weight' value='${ex.weight}'></p>`;
+        currentEl.innerHTML = `<div class="exercise-details">` +
+            `<div class="name">${ex.type}</div>` +
+            `<div class="set">Set: ${ex.sets}</div>` +
+            `<label>Reps: <input type='number' id='reps' value='${ex.reps}'></label>` +
+            `<label>Weight: <input type='number' id='weight' value='${ex.weight}'></label>` +
+            `</div>`;
         doneBtn.textContent = 'Done';
     }
+    updateProgress();
 }
 
 doneBtn.onclick = () => {
@@ -96,11 +113,41 @@ doneBtn.onclick = () => {
 
 function finish() {
     const totalTime = Date.now() - startTime;
+    clearInterval(timerInterval);
+    progressBar.value = 100;
+    progressText.textContent = '100%';
     addWorkoutLog({routineId:routine.id,date:new Date().toISOString(),records,totalTime});
     window.location.href = 'summary.html';
 }
 
-showExercise();
+function formatTime(ms) {
+    const sec = Math.floor(ms / 1000);
+    const m = Math.floor(sec / 60);
+    const s = sec % 60;
+    return `${m}:${s.toString().padStart(2,'0')}`;
+}
+
+function updateTimer() {
+    if (startTime) {
+        timerEl.textContent = formatTime(Date.now() - startTime);
+    }
+}
+
+function updateProgress() {
+    const percent = Math.floor((index / routine.exercises.length) * 100);
+    progressBar.value = percent;
+    progressText.textContent = `${percent}%`;
+}
+
+startBtn.onclick = () => {
+    startBtn.classList.add('hidden');
+    doneBtn.classList.remove('hidden');
+    startTime = Date.now();
+    exerciseStart = startTime;
+    updateTimer();
+    timerInterval = setInterval(updateTimer, 1000);
+    showExercise();
+};
 </script>
 </body>
 </html>
