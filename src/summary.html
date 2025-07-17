@@ -27,7 +27,12 @@ if (last) {
     const routine = routines.find(r=>r.id===last.routineId) || {name:'Workout'};
     summaryEl.innerHTML = `<h2>${routine.name}</h2>` +
         `<p>Total time: ${(last.totalTime/1000).toFixed(1)}s</p>` +
-        last.records.map(r=> `<div>${r.type}: ${r.reps} reps @ ${r.weight}kg </div>`).join('');
+        last.records.map(r => {
+            if (r.type === 'Rest') {
+                return `<div>Rest: ${r.rest}s</div>`;
+            }
+            return `<div>${r.type}: ${r.reps} reps @ ${r.weight}kg </div>`;
+        }).join('');
 }
 updateStats();
 </script>
