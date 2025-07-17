@@ -16,11 +16,11 @@
     </nav>
 </header>
     <div class="container">
+        <h2 id="routineTitle"></h2>
         <div class="timer-wrapper">
             <span id="workoutTimer" class="timer">0:00</span>
             <button id="startBtn">Start Workout</button>
         </div>
-        <h2 id="routineTitle"></h2>
         <div id="currentExercise"></div>
         <button id="doneBtn" class="hidden">Done</button>
         <div id="progressContainer">
@@ -78,7 +78,7 @@ function showExercise() {
         }, 1000);
     } else {
         currentEl.innerHTML = `<div class="exercise-details">` +
-            `<div class="name">${ex.type}</div>` +
+            `<h3 class="exercise-name">${ex.type}</h3>` +
             `<div class="set">Set: ${ex.sets}</div>` +
             `<label>Reps: <input type='number' id='reps' value='${ex.reps}'></label>` +
             `<label>Weight: <input type='number' id='weight' value='${ex.weight}'></label>` +
