@@ -25,11 +25,16 @@ const last = workouts[workouts.length-1];
 const summaryEl = document.getElementById('summary');
 if (last) {
     const routine = routines.find(r=>r.id===last.routineId) || {name:'Workout'};
+    const totalRest = last.records
+        .filter(r => r.type === 'Rest')
+        .reduce((sum, r) => sum + (r.end - r.start), 0);
     summaryEl.innerHTML = `<h2>${routine.name}</h2>` +
         `<p>Total time: ${(last.totalTime/1000).toFixed(1)}s</p>` +
+        `<p>Total rest: ${(totalRest/1000).toFixed(0)}s</p>` +
         last.records.map(r => {
             if (r.type === 'Rest') {
-                return `<div>Rest: ${r.rest}s</div>`;
+                const actual = Math.round((r.end - r.start)/1000);
+                return `<div>Rest: ${actual}s</div>`;
             }
             return `<div>${r.type}: ${r.reps} reps @ ${r.weight}kg </div>`;
         }).join('');
