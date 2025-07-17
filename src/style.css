@@ -120,3 +120,11 @@ button {
     flex-direction: column;
     gap: 5px;
 }
+
+#routineTitle {
+    margin-top: 20px;
+}
+
+.exercise-name {
+    margin: 0;
+}
