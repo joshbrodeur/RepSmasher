@@ -1,0 +1,13 @@
+{
+  "name": "repsmasher",
+  "version": "1.0.0",
+  "description": "Personal Work Out application",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"All tests passed\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}
