@@ -18,6 +18,14 @@
 <div class="container">
     <ul id="routineList" class="list"></ul>
 </div>
+<div id="previewModal" class="modal hidden">
+    <div class="modal-content">
+        <h2 id="previewTitle"></h2>
+        <ul id="previewExercises" class="list"></ul>
+        <button id="startPreview">Start Workout</button>
+        <button id="closePreview">Close</button>
+    </div>
+</div>
 <script src="app.js"></script>
 <script>
 function renderRoutines() {
@@ -29,7 +37,7 @@ function renderRoutines() {
         nameSpan.textContent = r.name;
         nameSpan.style.cursor = 'pointer';
         nameSpan.onclick = () => {
-            window.location.href = `workout.html?id=${r.id}`;
+            showPreview(r);
         };
         li.appendChild(nameSpan);
 
@@ -56,6 +64,35 @@ function renderRoutines() {
         list.appendChild(li);
     });
 }
+
+const previewModal = document.getElementById('previewModal');
+const previewTitle = document.getElementById('previewTitle');
+const previewList = document.getElementById('previewExercises');
+let previewRoutine = null;
+
+function showPreview(r) {
+    previewRoutine = r;
+    previewTitle.textContent = r.name;
+    previewList.innerHTML = r.exercises.map(ex => {
+        if (ex.restSet) {
+            return `<li>Rest - ${ex.rest}s</li>`;
+        }
+        return `<li>${ex.type} - ${ex.sets}x${ex.reps} @ ${ex.weight}kg</li>`;
+    }).join('');
+    previewModal.classList.remove('hidden');
+}
+
+function hidePreview() {
+    previewModal.classList.add('hidden');
+    previewRoutine = null;
+}
+
+document.getElementById('closePreview').onclick = hidePreview;
+document.getElementById('startPreview').onclick = () => {
+    if (previewRoutine) {
+        window.location.href = `workout.html?id=${previewRoutine.id}`;
+    }
+};
 
 renderRoutines();
 </script>
