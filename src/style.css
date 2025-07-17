@@ -60,6 +60,7 @@ button {
     margin-bottom: 15px;
 }
 
+
 .hidden {
     display: none;
 }
@@ -83,6 +84,10 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+.modal.hidden {
+    display: none;
 }
 
 .modal-content {
