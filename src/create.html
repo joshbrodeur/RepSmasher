@@ -16,9 +16,9 @@
     </nav>
 </header>
 <div class="container">
-    <label>Name: <input type="text" id="routineName"></label>
+    <button id="toggleMode">Switch to Rest</button>
 
-    <div class="inputs">
+    <div class="inputs" id="exerciseInputs">
         <input type="text" id="exName" placeholder="Exercise name">
         <input type="number" id="exReps" placeholder="Reps" min="0">
         <input type="number" id="exWeight" placeholder="Weight" min="0" step="0.1">
@@ -26,7 +26,7 @@
         <button id="addExercise">Add Exercise</button>
     </div>
 
-    <div class="inputs">
+    <div class="inputs" id="restInputs">
         <input type="number" id="restSeconds" placeholder="Rest seconds" min="0" value="30">
         <button id="addRest">Add Rest Set</button>
     </div>
@@ -41,12 +41,38 @@ const params = new URLSearchParams(location.search);
 const editId = params.get('id');
 let exercises = [];
 let editing = false;
+let routineName = '';
+
+const exInputs = document.getElementById('exerciseInputs');
+const restInputs = document.getElementById('restInputs');
+const toggleBtn = document.getElementById('toggleMode');
+let exerciseMode = true;
+
+function updateToggle() {
+    if (exerciseMode) {
+        exInputs.style.display = 'block';
+        restInputs.style.display = 'none';
+        toggleBtn.textContent = 'Switch to Rest';
+        if (!document.getElementById('exSets').value) {
+            document.getElementById('exSets').value = '1';
+        }
+    } else {
+        exInputs.style.display = 'none';
+        restInputs.style.display = 'block';
+        toggleBtn.textContent = 'Switch to Exercise';
+    }
+}
+
+toggleBtn.onclick = () => {
+    exerciseMode = !exerciseMode;
+    updateToggle();
+};
 
 if (editId) {
     const found = routines.find(r => r.id === editId);
     if (found) {
         editing = true;
-        document.getElementById('routineName').value = found.name;
+        routineName = found.name;
         exercises = JSON.parse(JSON.stringify(found.exercises));
         document.getElementById('deleteRoutine').style.display = 'inline-block';
     }
@@ -104,8 +130,11 @@ document.getElementById('addRest').onclick = () => {
 };
 
 document.getElementById('saveRoutine').onclick = () => {
-    const name = document.getElementById('routineName').value || 'Routine';
-    const routine = {id: editing ? editId : createId(), name, exercises};
+    const name = prompt('Enter workout name:', routineName || 'Routine');
+    if (name !== null) {
+        routineName = name.trim() || 'Routine';
+    }
+    const routine = {id: editing ? editId : createId(), name: routineName || 'Routine', exercises};
     saveRoutine(routine);
     window.location.href = 'index.html';
 };
@@ -119,6 +148,7 @@ document.getElementById('deleteRoutine').onclick = () => {
 };
 
 renderList();
+updateToggle();
 </script>
 </body>
 </html>
