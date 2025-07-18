@@ -36,7 +36,8 @@ if (last) {
                 const actual = Math.round((r.end - r.start)/1000);
                 return `<div>Rest: ${actual}s</div>`;
             }
-            return `<div>${r.type}: ${r.reps} reps @ ${r.weight}kg </div>`;
+            const setInfo = r.set ? `Set ${r.set}: ` : '';
+            return `<div>${setInfo}${r.type}: ${r.reps} reps @ ${r.weight}kg</div>`;
         }).join('');
 }
 updateStats();

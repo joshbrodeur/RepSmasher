@@ -22,7 +22,7 @@
         <input type="text" id="exName" placeholder="Exercise name">
         <input type="number" id="exReps" placeholder="Reps" min="0">
         <input type="number" id="exWeight" placeholder="Weight" min="0" step="0.1">
-        <input type="number" id="exSets" placeholder="Sets" min="1" value="1">
+        <input type="number" id="exSets" placeholder="Sets" min="1">
         <button id="addExercise">Add Exercise</button>
     </div>
 
@@ -53,9 +53,6 @@ function updateToggle() {
         exInputs.style.display = 'block';
         restInputs.style.display = 'none';
         toggleBtn.textContent = 'Switch to Rest';
-        if (!document.getElementById('exSets').value) {
-            document.getElementById('exSets').value = '1';
-        }
     } else {
         exInputs.style.display = 'none';
         restInputs.style.display = 'block';
@@ -170,7 +167,7 @@ document.getElementById('addExercise').onclick = () => {
         document.getElementById('exName').value = '';
         document.getElementById('exReps').value = '';
         document.getElementById('exWeight').value = '';
-        document.getElementById('exSets').value = '1';
+        document.getElementById('exSets').value = '';
         renderList();
     }
 };
