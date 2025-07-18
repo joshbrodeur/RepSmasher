@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Workout Logs</title>
+    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+</head>
+<body>
+<header>
+    <h1>Workout Logs</h1>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="create.html">Create Workout</a>
+        <a href="choose.html">Choose Workout</a>
+        <a href="logs.html">Logs</a>
+    </nav>
+</header>
+<div class="container">
+    <ul id="logList" class="list"></ul>
+</div>
+<script src="app.js"></script>
+<script>
+function renderLogs() {
+    const list = document.getElementById('logList');
+    list.innerHTML = '';
+    const counts = {};
+    workouts.forEach((log, idx) => {
+        const routine = routines.find(r => r.id === log.routineId) || {name:'Workout'};
+        counts[log.routineId] = (counts[log.routineId] || 0) + 1;
+        const count = counts[log.routineId];
+        const date = new Date(log.date);
+        const li = document.createElement('li');
+        const span = document.createElement('span');
+        span.textContent = `${routine.name} - #${count} - ${date.toLocaleString()}`;
+        span.style.cursor = 'pointer';
+        span.onclick = () => {
+            window.location.href = `summary.html?i=${idx}`;
+        };
+        li.appendChild(span);
+        list.appendChild(li);
+    });
+}
+renderLogs();
+</script>
+</body>
+</html>

@@ -13,6 +13,7 @@
         <a href="index.html">Home</a>
         <a href="create.html">Create Workout</a>
         <a href="choose.html">Choose Workout</a>
+        <a href="logs.html">Logs</a>
     </nav>
 </header>
 <div class="container">
@@ -21,17 +22,26 @@
 </div>
 <script src="app.js"></script>
 <script>
-const last = workouts[workouts.length-1];
+const params = new URLSearchParams(location.search);
+const iParam = params.get('i');
+let logIndex = workouts.length - 1;
+if (iParam !== null) {
+    const parsed = parseInt(iParam, 10);
+    if (!isNaN(parsed) && parsed >= 0 && parsed < workouts.length) {
+        logIndex = parsed;
+    }
+}
+const log = workouts[logIndex];
 const summaryEl = document.getElementById('summary');
-if (last) {
-    const routine = routines.find(r=>r.id===last.routineId) || {name:'Workout'};
-    const totalRest = last.records
+if (log) {
+    const routine = routines.find(r=>r.id===log.routineId) || {name:'Workout'};
+    const totalRest = log.records
         .filter(r => r.type === 'Rest')
         .reduce((sum, r) => sum + (r.end - r.start), 0);
     summaryEl.innerHTML = `<h2>${routine.name}</h2>` +
-        `<p>Total time: ${(last.totalTime/1000).toFixed(1)}s</p>` +
+        `<p>Total time: ${(log.totalTime/1000).toFixed(1)}s</p>` +
         `<p>Total rest: ${(totalRest/1000).toFixed(0)}s</p>` +
-        last.records.map(r => {
+        log.records.map(r => {
             if (r.type === 'Rest') {
                 const actual = Math.round((r.end - r.start)/1000);
                 return `<div>Rest: ${actual}s</div>`;
