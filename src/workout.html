@@ -84,7 +84,7 @@ function showExercise() {
         const overallSet = (setTotals[ex.type] || 0) + 1;
         currentEl.innerHTML = `<div class="exercise-details">` +
             `<h3 class="exercise-name">${ex.type}</h3>` +
-            `<div class="set">Set ${overallSet} (${currentSet} of ${ex.sets})</div>` +
+            `<div class="set">Set ${overallSet}</div>` +
             `<label>Reps: <input type='number' id='reps' value='${ex.reps}'></label>` +
             `<label>Weight: <input type='number' id='weight' value='${ex.weight}'></label>` +
             `</div>`;

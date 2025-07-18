@@ -85,7 +85,9 @@ function renderList() {
         if (ex.restSet) {
             span.textContent = `Rest - ${ex.rest}s`;
         } else {
-            span.textContent = `${ex.type} - ${ex.sets}x${ex.reps} @ ${ex.weight}kg`;
+            const repsText = `${ex.reps} Rep${ex.reps === 1 ? '' : 's'}`;
+            const weightText = ex.weight > 0 ? ` @ ${ex.weight}kg` : '';
+            span.textContent = `${ex.type} - ${repsText}${weightText}`;
         }
         li.appendChild(span);
 

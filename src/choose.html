@@ -77,7 +77,9 @@ function showPreview(r) {
         if (ex.restSet) {
             return `<li>Rest - ${ex.rest}s</li>`;
         }
-        return `<li>${ex.type} - ${ex.sets}x${ex.reps} @ ${ex.weight}kg</li>`;
+        const repsText = `${ex.reps} Rep${ex.reps === 1 ? '' : 's'}`;
+        const weightText = ex.weight > 0 ? ` @ ${ex.weight}kg` : '';
+        return `<li>${ex.type} - ${repsText}${weightText}</li>`;
     }).join('');
     previewModal.classList.remove('hidden');
 }
