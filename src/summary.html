@@ -37,7 +37,8 @@ if (last) {
                 return `<div>Rest: ${actual}s</div>`;
             }
             const setInfo = r.set ? `Set ${r.set}: ` : '';
-            return `<div>${setInfo}${r.type}: ${r.reps} reps @ ${r.weight}kg</div>`;
+            const weightText = r.weight > 0 ? ` @ ${r.weight}kg` : '';
+            return `<div>${setInfo}${r.type}: ${r.reps} reps${weightText}</div>`;
         }).join('');
 }
 updateStats();
