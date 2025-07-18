@@ -22,7 +22,7 @@
         <input type="text" id="exName" placeholder="Exercise name">
         <input type="number" id="exReps" placeholder="Reps" min="0">
         <input type="number" id="exWeight" placeholder="Weight" min="0" step="0.1">
-        <input type="number" id="exSets" placeholder="Sets" min="1" value="1">
+        <input type="number" id="exSets" placeholder="Sets" min="1">
         <button id="addExercise">Add Exercise</button>
     </div>
 
@@ -53,9 +53,6 @@ function updateToggle() {
         exInputs.style.display = 'block';
         restInputs.style.display = 'none';
         toggleBtn.textContent = 'Switch to Rest';
-        if (!document.getElementById('exSets').value) {
-            document.getElementById('exSets').value = '1';
-        }
     } else {
         exInputs.style.display = 'none';
         restInputs.style.display = 'block';
@@ -74,6 +71,15 @@ if (editId) {
         editing = true;
         routineName = found.name;
         exercises = JSON.parse(JSON.stringify(found.exercises));
+        exercises = exercises.flatMap(ex => {
+            if (ex.restSet || ex.setNum) return [ex];
+            const sets = ex.sets || 1;
+            const list = [];
+            for (let i = 1; i <= sets; i++) {
+                list.push({type: ex.type, sets, setNum: i, reps: ex.reps, weight: ex.weight, rest: ex.rest || 0});
+            }
+            return list;
+        });
         document.getElementById('deleteRoutine').style.display = 'inline-block';
     }
 }
@@ -89,7 +95,8 @@ function renderList() {
         if (ex.restSet) {
             span.textContent = `Rest - ${ex.rest}s`;
         } else {
-            span.textContent = `${ex.type} - ${ex.sets}x${ex.reps} @ ${ex.weight}kg`;
+            const info = ex.sets > 1 ? ` (Set ${ex.setNum} of ${ex.sets})` : '';
+            span.textContent = `${ex.type}${info} - ${ex.reps} reps @ ${ex.weight}kg`;
         }
         li.appendChild(span);
 
@@ -141,14 +148,11 @@ function editExercise(idx) {
     } else {
         let type = prompt('Exercise name:', ex.type);
         if (type === null) return;
-        const sets = prompt('Sets:', ex.sets);
-        if (sets === null) return;
         const reps = prompt('Reps:', ex.reps);
         if (reps === null) return;
         const weight = prompt('Weight:', ex.weight);
         if (weight === null) return;
         ex.type = type.trim() || ex.type;
-        ex.sets = parseInt(sets, 10) || 1;
         ex.reps = parseInt(reps, 10) || 0;
         ex.weight = parseFloat(weight) || 0;
     }
@@ -166,11 +170,13 @@ document.getElementById('addExercise').onclick = () => {
     const weight = parseFloat(document.getElementById('exWeight').value) || 0;
     const sets = parseInt(document.getElementById('exSets').value, 10) || 1;
     if (type) {
-        exercises.push({type, sets, reps, weight, rest:0});
+        for (let i = 1; i <= sets; i++) {
+            exercises.push({type, sets, setNum: i, reps, weight, rest:0});
+        }
         document.getElementById('exName').value = '';
         document.getElementById('exReps').value = '';
         document.getElementById('exWeight').value = '';
-        document.getElementById('exSets').value = '1';
+        document.getElementById('exSets').value = '';
         renderList();
     }
 };

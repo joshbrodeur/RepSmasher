@@ -32,7 +32,19 @@
 <script>
 const params = new URLSearchParams(location.search);
 const id = params.get('id');
-const routine = routines.find(r => r.id === id);
+let routine = routines.find(r => r.id === id);
+if (routine) {
+    routine = JSON.parse(JSON.stringify(routine));
+    routine.exercises = routine.exercises.flatMap(ex => {
+        if (ex.restSet || ex.setNum) return [ex];
+        const sets = ex.sets || 1;
+        const list = [];
+        for (let i = 1; i <= sets; i++) {
+            list.push({type: ex.type, sets, setNum: i, reps: ex.reps, weight: ex.weight, rest: ex.rest || 0, restSet: ex.restSet});
+        }
+        return list;
+    });
+}
 const titleEl = document.getElementById('routineTitle');
 const currentEl = document.getElementById('currentExercise');
 const doneBtn = document.getElementById('doneBtn');
@@ -48,6 +60,7 @@ let index = 0;
 let startTime = null;
 let records = [];
 let exerciseStart = null;
+const totalSteps = routine ? routine.exercises.length : 0;
 
 function showExercise() {
     if (!routine || index >= routine.exercises.length) {
@@ -77,9 +90,10 @@ function showExercise() {
             }
         }, 1000);
     } else {
+        const setLine = ex.sets > 1 ? `<div class="set">Set ${ex.setNum} of ${ex.sets}</div>` : '';
         currentEl.innerHTML = `<div class="exercise-details">` +
             `<h3 class="exercise-name">${ex.type}</h3>` +
-            `<div class="set">Set: ${ex.sets}</div>` +
+            setLine +
             `<label>Reps: <input type='number' id='reps' value='${ex.reps}'></label>` +
             `<label>Weight: <input type='number' id='weight' value='${ex.weight}'></label>` +
             `</div>`;
@@ -101,7 +115,7 @@ doneBtn.onclick = () => {
         weight = parseFloat(document.getElementById('weight').value);
     }
     const now = Date.now();
-    records.push({type:ex.type,reps,weight,start:exerciseStart,end:now,rest:ex.rest});
+    records.push({type:ex.type,reps,weight,start:exerciseStart,end:now,rest:ex.rest,set:ex.restSet ? 1 : ex.setNum});
     index++;
     exerciseStart = Date.now();
     if (index < routine.exercises.length) {
@@ -134,7 +148,7 @@ function updateTimer() {
 }
 
 function updateProgress() {
-    const percent = Math.floor((index / routine.exercises.length) * 100);
+    const percent = totalSteps ? Math.floor((index / totalSteps) * 100) : 0;
     progressBar.value = percent;
     progressText.textContent = `${percent}%`;
 }
