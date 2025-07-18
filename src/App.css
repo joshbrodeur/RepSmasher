@@ -1,0 +1,8 @@
+.container p {
+  margin-bottom: 1rem;
+}
+
+input[type="text"],
+input[type="number"] {
+  margin-right: 0.5rem;
+}

@@ -1,7 +1,22 @@
 # RepSmasher
-Personal Work Out application
 
-## Usage
+A simple fitness tracker built with React and Vite.
 
-Open [`index.html`](https://joshbrodeur.github.io/RepSmasher/) in a browser. Use the menu buttons to navigate to the workout pages located in the `src` directory.
-The **Logs** page lists your previous workout sessions and lets you view individual summaries.
+## Development
+
+Install dependencies and run the development server:
+
+```bash
+npm install
+npm run dev
+```
+
+## Production build / GitHub Pages
+
+The project uses the `gh-pages` branch for deployment. Build and publish with:
+
+```bash
+npm run deploy
+```
+
+Your site will be available at `https://<your-username>.github.io/RepSmasher/`.
