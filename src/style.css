@@ -49,11 +49,16 @@ button {
 
 .inputs {
     margin: 10px 0;
+    display: flex;
+    flex-direction: column;
 }
 
-.inputs input {
-    margin-right: 5px;
+.inputs input,
+.inputs button {
+    margin: 5px 0;
     padding: 5px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .stats {

@@ -48,6 +48,9 @@ let index = 0;
 let startTime = null;
 let records = [];
 let exerciseStart = null;
+let currentSet = 1;
+let completedSteps = 0;
+const totalSteps = routine ? routine.exercises.reduce((sum, ex) => sum + (ex.restSet ? 1 : ex.sets), 0) : 0;
 
 function showExercise() {
     if (!routine || index >= routine.exercises.length) {
@@ -79,7 +82,7 @@ function showExercise() {
     } else {
         currentEl.innerHTML = `<div class="exercise-details">` +
             `<h3 class="exercise-name">${ex.type}</h3>` +
-            `<div class="set">Set: ${ex.sets}</div>` +
+            `<div class="set">Set ${currentSet} of ${ex.sets}</div>` +
             `<label>Reps: <input type='number' id='reps' value='${ex.reps}'></label>` +
             `<label>Weight: <input type='number' id='weight' value='${ex.weight}'></label>` +
             `</div>`;
@@ -101,13 +104,21 @@ doneBtn.onclick = () => {
         weight = parseFloat(document.getElementById('weight').value);
     }
     const now = Date.now();
-    records.push({type:ex.type,reps,weight,start:exerciseStart,end:now,rest:ex.rest});
-    index++;
-    exerciseStart = Date.now();
-    if (index < routine.exercises.length) {
+    records.push({type:ex.type,reps,weight,start:exerciseStart,end:now,rest:ex.rest,set:ex.restSet ? 1 : currentSet});
+    completedSteps++;
+    if (!ex.restSet && currentSet < ex.sets) {
+        currentSet++;
+        exerciseStart = Date.now();
         showExercise();
     } else {
-        finish();
+        currentSet = 1;
+        index++;
+        exerciseStart = Date.now();
+        if (index < routine.exercises.length) {
+            showExercise();
+        } else {
+            finish();
+        }
     }
 };
 
@@ -134,7 +145,7 @@ function updateTimer() {
 }
 
 function updateProgress() {
-    const percent = Math.floor((index / routine.exercises.length) * 100);
+    const percent = totalSteps ? Math.floor((completedSteps / totalSteps) * 100) : 0;
     progressBar.value = percent;
     progressText.textContent = `${percent}%`;
 }
