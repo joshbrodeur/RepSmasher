@@ -1,13 +1,27 @@
 {
   "name": "repsmasher",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Personal Work Out application",
-  "main": "main.js",
+  "private": true,
   "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "gh-pages -d dist",
     "test": "echo \"All tests passed\""
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "type": "commonjs"
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-router-dom": "^6.23.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.2.1",
+    "gh-pages": "^6.1.1",
+    "vite": "^5.2.0"
+  }
 }
