@@ -1,4 +1,4 @@
-import { useStore } from '../store.js';
+import { useStore } from '../store.jsx';
 
 export default function Home() {
   const { workouts } = useStore();

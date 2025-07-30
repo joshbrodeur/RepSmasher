@@ -1,5 +1,5 @@
 import { useParams, Link } from 'react-router-dom';
-import { useStore } from '../store.js';
+import { useStore } from '../store.jsx';
 
 export default function Summary() {
   const { index } = useParams();

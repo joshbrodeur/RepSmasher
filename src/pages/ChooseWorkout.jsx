@@ -1,4 +1,4 @@
-import { useStore } from '../store.js';
+import { useStore } from '../store.jsx';
 import { Link, useNavigate } from 'react-router-dom';
 
 export default function ChooseWorkout() {
