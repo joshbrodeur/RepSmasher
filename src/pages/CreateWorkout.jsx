@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useStore } from '../store.js';
+import { useStore } from '../store.jsx';
 import { createId } from '../storage.js';
 
 export default function CreateWorkout() {

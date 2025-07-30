@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { useStore } from '../store.js';
+import { useStore } from '../store.jsx';
 
 export default function Workout() {
   const { id } = useParams();
