@@ -2,9 +2,14 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  base: '/RepSmasher/',
   plugins: [react()],
   server: {
-    allowedHosts: 'all'
+    host: true
+  },
+  preview: {
+    host: true,
+    // Optionally allow all preview hosts
+    // Or add only your exact domain to allowedHosts
+    allowedHosts: ['.replit.dev']
   }
 });
