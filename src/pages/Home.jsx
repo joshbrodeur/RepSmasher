@@ -1,4 +1,5 @@
 import { useStore } from '../store.jsx';
+import Card from '../components/Card.jsx';
 
 export default function Home() {
   const { workouts } = useStore();
@@ -11,12 +12,14 @@ export default function Home() {
   );
 
   return (
-    <div className="container">
-      <h2>Statistics</h2>
-      <p>Total Workouts: {totalWorkouts}</p>
-      <p>Total Sets: {totalSets}</p>
-      <p>Total Weight: {totalWeight}</p>
-      <p>Welcome to RepSmasher! Track your workouts and smash those goals.</p>
+    <div className="max-w-md mx-auto space-y-4">
+      <Card>
+        <h2 className="text-lg font-bold mb-2">Statistics</h2>
+        <p>Total Workouts: {totalWorkouts}</p>
+        <p>Total Sets: {totalSets}</p>
+        <p>Total Weight: {totalWeight}</p>
+      </Card>
+      <p className="text-center">Welcome to RepSmasher! Track your workouts and smash those goals.</p>
     </div>
   );
 }
