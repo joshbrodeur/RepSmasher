@@ -45,23 +45,44 @@ export default function CreateWorkout() {
   }
 
   return (
-    <div className="container">
-      <h2>{existing ? 'Edit Workout' : 'Create Workout'}</h2>
-      <input value={name} onChange={e => setName(e.target.value)} placeholder="Workout name" />
-      <div>
-        <button onClick={addExercise}>Add Exercise</button>
-        <button onClick={addRest}>Add Rest</button>
+    <div className="max-w-md mx-auto space-y-4">
+      <h2 className="text-lg font-bold text-center">
+        {existing ? 'Edit Workout' : 'Create Workout'}
+      </h2>
+      <input
+        className="w-full p-2 rounded border dark:bg-gray-700"
+        value={name}
+        onChange={e => setName(e.target.value)}
+        placeholder="Workout name"
+      />
+      <div className="flex gap-2">
+        <button className="flex-1 p-2 bg-blue-600 text-white rounded" onClick={addExercise}>
+          Add Exercise
+        </button>
+        <button className="flex-1 p-2 bg-blue-600 text-white rounded" onClick={addRest}>
+          Add Rest
+        </button>
       </div>
-      <ul className="list">
+      <ul className="space-y-2">
         {exercises.map((ex, idx) => (
-          <li key={idx}>
-            {ex.restSet ? `Rest - ${ex.rest}s` : `${ex.type} - ${ex.reps} reps @ ${ex.weight}`}
-            <button onClick={() => remove(idx)}>Delete</button>
+          <li key={idx} className="bg-white dark:bg-gray-800 p-3 rounded shadow flex justify-between">
+            <span>
+              {ex.restSet ? `Rest - ${ex.rest}s` : `${ex.type} - ${ex.reps} reps @ ${ex.weight}`}
+            </span>
+            <button className="text-red-500" onClick={() => remove(idx)}>Delete</button>
           </li>
         ))}
       </ul>
-      <button onClick={saveRoutine}>Save</button>
-      {existing && <button onClick={deleteRoutine}>Delete</button>}
+      <div className="flex gap-2">
+        <button className="flex-1 p-2 bg-green-600 text-white rounded" onClick={saveRoutine}>
+          Save
+        </button>
+        {existing && (
+          <button className="flex-1 p-2 bg-red-600 text-white rounded" onClick={deleteRoutine}>
+            Delete
+          </button>
+        )}
+      </div>
     </div>
   );
 }
