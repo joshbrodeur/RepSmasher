@@ -12,6 +12,7 @@ export default function CreateWorkout() {
   const existing = routines.find(r => r.id === editId);
   const [name, setName] = useState(existing?.name || '');
   const [exercises, setExercises] = useState(() => existing ? [...existing.exercises] : []);
+  const [dragIndex, setDragIndex] = useState(null);
 
   function addExercise() {
     const type = prompt('Exercise name');
@@ -30,6 +31,23 @@ export default function CreateWorkout() {
     setExercises(exercises.filter((_, i) => i !== idx));
   }
 
+  function handleDragStart(idx) {
+    setDragIndex(idx);
+  }
+
+  function handleDragOver(e) {
+    e.preventDefault();
+  }
+
+  function handleDrop(idx) {
+    if (dragIndex === null || dragIndex === idx) return;
+    const list = [...exercises];
+    const [item] = list.splice(dragIndex, 1);
+    list.splice(idx, 0, item);
+    setExercises(list);
+    setDragIndex(null);
+  }
+
   function saveRoutine() {
     const routine = { id: existing ? existing.id : createId(), name: name || 'Routine', exercises };
     const list = existing ? routines.map(r => r.id === routine.id ? routine : r) : [...routines, routine];
@@ -45,7 +63,7 @@ export default function CreateWorkout() {
   }
 
   return (
-    <div className="max-w-md mx-auto space-y-4">
+    <div className="max-w-md mx-auto space-y-4 pb-20">
       <h2 className="text-lg font-bold text-center">
         {existing ? 'Edit Workout' : 'Create Workout'}
       </h2>
@@ -65,11 +83,22 @@ export default function CreateWorkout() {
       </div>
       <ul className="space-y-2">
         {exercises.map((ex, idx) => (
-          <li key={idx} className="bg-white dark:bg-gray-800 p-3 rounded shadow flex justify-between">
+          <li
+            key={idx}
+            draggable
+            onDragStart={() => handleDragStart(idx)}
+            onDragOver={handleDragOver}
+            onDrop={() => handleDrop(idx)}
+            className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow flex justify-between items-center cursor-move"
+          >
             <span>
-              {ex.restSet ? `Rest - ${ex.rest}s` : `${ex.type} - ${ex.reps} reps @ ${ex.weight}`}
+              {ex.restSet
+                ? `Rest - ${ex.rest}s`
+                : `${ex.type} - ${ex.reps} reps @ ${ex.weight}`}
             </span>
-            <button className="text-red-500" onClick={() => remove(idx)}>Delete</button>
+            <button className="text-red-500" onClick={() => remove(idx)}>
+              Delete
+            </button>
           </li>
         ))}
       </ul>
