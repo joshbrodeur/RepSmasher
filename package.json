@@ -1,12 +1,14 @@
 {
   "name": "repsmasher",
   "version": "2.0.0",
+  "homepage": "https://your-username.github.io/RepSmasher/",
   "description": "Personal Work Out application",
   "private": true,
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview --host",
+    "predeploy": "npm run build",
     "deploy": "gh-pages -d dist",
     "test": "echo \"All tests passed\""
   },
