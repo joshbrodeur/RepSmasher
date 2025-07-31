@@ -1,3 +1,13 @@
+/*
+Redesign this screen using Tailwind CSS:
+- Use a dark theme
+- Add a header with title + theme toggle
+- Wrap the stats in a rounded card
+- Use bottom nav with icons for Home, Create, Logs
+- Use large touch targets and spacing
+- Follow a workout app aesthetic
+*/
+
 import { Routes, Route, Link } from 'react-router-dom';
 import Home from './pages/Home.jsx';
 import CreateWorkout from './pages/CreateWorkout.jsx';
