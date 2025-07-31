@@ -12,16 +12,16 @@ export default function ChooseWorkout() {
   }
 
   return (
-    <div className="container">
-      <ul className="list">
+    <div className="max-w-md mx-auto">
+      <ul className="space-y-2">
         {routines.map(r => (
-          <li key={r.id}>
-            <span onClick={() => navigate(`/workout/${r.id}`)} style={{ cursor: 'pointer' }}>
+          <li key={r.id} className="bg-white dark:bg-gray-800 p-3 rounded shadow flex justify-between">
+            <span onClick={() => navigate(`/workout/${r.id}`)} className="cursor-pointer">
               {r.name}
             </span>
-            <span>
-              <Link to={`/create?id=${r.id}`}>Edit</Link>
-              <button onClick={() => remove(r.id)}>Delete</button>
+            <span className="flex gap-2">
+              <Link className="text-blue-600" to={`/create?id=${r.id}`}>Edit</Link>
+              <button className="text-red-500" onClick={() => remove(r.id)}>Delete</button>
             </span>
           </li>
         ))}

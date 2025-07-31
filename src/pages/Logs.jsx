@@ -8,16 +8,16 @@ export default function Logs() {
   const counts = {};
 
   return (
-    <div className="container">
-      <ul className="list">
+    <div className="max-w-md mx-auto">
+      <ul className="space-y-2">
         {workouts.map((log, idx) => {
           counts[log.routineId] = (counts[log.routineId] || 0) + 1;
           const count = counts[log.routineId];
           const routine = routines.find(r => r.id === log.routineId) || { name: 'Workout' };
           const date = new Date(log.date);
           return (
-            <li key={idx}>
-              <span style={{ cursor: 'pointer' }} onClick={() => navigate(`/summary/${idx}`)}>
+            <li key={idx} className="bg-white dark:bg-gray-800 p-3 rounded shadow">
+              <span className="cursor-pointer" onClick={() => navigate(`/summary/${idx}`)}>
                 {routine.name} - #{count} - {date.toLocaleString()}
               </span>
             </li>
