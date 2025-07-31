@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useStore } from '../store.jsx';
 import { createId } from '../storage.js';
+import Card from '../components/Card.jsx';
 
 export default function CreateWorkout() {
   const { routines, setRoutines } = useStore();
@@ -45,23 +46,46 @@ export default function CreateWorkout() {
   }
 
   return (
-    <div className="container">
-      <h2>{existing ? 'Edit Workout' : 'Create Workout'}</h2>
-      <input value={name} onChange={e => setName(e.target.value)} placeholder="Workout name" />
-      <div>
-        <button onClick={addExercise}>Add Exercise</button>
-        <button onClick={addRest}>Add Rest</button>
-      </div>
-      <ul className="list">
-        {exercises.map((ex, idx) => (
-          <li key={idx}>
-            {ex.restSet ? `Rest - ${ex.rest}s` : `${ex.type} - ${ex.reps} reps @ ${ex.weight}`}
-            <button onClick={() => remove(idx)}>Delete</button>
-          </li>
-        ))}
-      </ul>
-      <button onClick={saveRoutine}>Save</button>
-      {existing && <button onClick={deleteRoutine}>Delete</button>}
+    <div className="max-w-md mx-auto">
+      <Card className="space-y-4 my-4">
+        <h3 className="text-lg font-semibold text-center">
+          {existing ? 'Edit Workout' : 'Create Workout'}
+        </h3>
+        <input
+          className="w-full p-2 rounded bg-gray-700 text-white placeholder-gray-400"
+          value={name}
+          onChange={e => setName(e.target.value)}
+          placeholder="Workout name"
+        />
+        <div className="flex gap-2">
+          <button className="flex-1 p-2 bg-blue-600 text-white rounded" onClick={addExercise}>
+            Add Exercise
+          </button>
+          <button className="flex-1 p-2 bg-blue-600 text-white rounded" onClick={addRest}>
+            Add Rest
+          </button>
+        </div>
+        <ul className="space-y-2">
+          {exercises.map((ex, idx) => (
+            <Card as="li" key={idx} className="flex justify-between py-3">
+              <span>
+                {ex.restSet ? `Rest - ${ex.rest}s` : `${ex.type} - ${ex.reps} reps @ ${ex.weight}`}
+              </span>
+              <button className="text-red-500" onClick={() => remove(idx)}>Delete</button>
+            </Card>
+          ))}
+        </ul>
+        <div className="flex gap-2">
+          <button className="flex-1 p-2 bg-green-600 text-white rounded" onClick={saveRoutine}>
+            Save
+          </button>
+          {existing && (
+            <button className="flex-1 p-2 bg-red-600 text-white rounded" onClick={deleteRoutine}>
+              Delete
+            </button>
+          )}
+        </div>
+      </Card>
     </div>
   );
 }
