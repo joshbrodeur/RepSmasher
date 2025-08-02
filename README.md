@@ -20,5 +20,5 @@ npm run deploy
 ```
 
 This command runs the build for you and publishes the contents of `dist/` to the
-`gh-pages` branch. Your site will be available at
-`https://joshbrodeur.github.io/RepSmasher/`.
+`gh-pages` branch of `https://github.com/joshbrodeur/RepSmasher.git`. The site
+will be available at `https://joshbrodeur.github.io/RepSmasher/`.
