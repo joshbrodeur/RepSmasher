@@ -3,6 +3,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useStore } from '../store.jsx';
 import { createId } from '../storage.js';
+import SaveWorkoutModal from '../components/SaveWorkoutModal.jsx';
+import ConfirmDialog from '../components/ConfirmDialog.jsx';
 
 export default function CreateWorkout() {
   const { routines, setRoutines } = useStore();
@@ -15,6 +17,8 @@ export default function CreateWorkout() {
   const [name, setName] = useState(existing?.name || '');
   const [exercises, setExercises] = useState(() => existing ? [...existing.exercises] : []);
   const [saveStatus, setSaveStatus] = useState('saved');
+  const [showSave, setShowSave] = useState(false);
+  const [confirmIndex, setConfirmIndex] = useState(null);
 
   function addExercise() {
     const type = prompt('Exercise name');
@@ -38,8 +42,13 @@ export default function CreateWorkout() {
   }
 
   function remove(idx) {
-    if (!window.confirm('Delete this card?')) return;
-    setExercises(exercises.filter((_, i) => i !== idx));
+    setConfirmIndex(idx);
+  }
+
+  function handleRemoveConfirmed() {
+    if (confirmIndex === null) return;
+    setExercises(exercises.filter((_, i) => i !== confirmIndex));
+    setConfirmIndex(null);
   }
 
   function handleDragEnd(result) {
@@ -50,24 +59,39 @@ export default function CreateWorkout() {
     setExercises(list);
   }
 
-  function saveRoutine() {
-    const routine = { id: routineId, name: name || 'Routine', exercises };
+  function saveRoutine(customName = name) {
+    const routine = { id: routineId, name: customName || 'Routine', exercises };
     const list = routines.some(r => r.id === routineId)
       ? routines.map(r => r.id === routineId ? routine : r)
       : [...routines, routine];
     try {
       setRoutines(list);
-      setSaveStatus('saved');
+      if (navigator.onLine) {
+        setSaveStatus('saved');
+      } else {
+        setSaveStatus('offline');
+      }
     } catch {
-      setSaveStatus('error');
+      setSaveStatus('offline');
     }
   }
 
   useEffect(() => {
     setSaveStatus('saving');
-    const t = setTimeout(saveRoutine, 300);
+    const t = setTimeout(() => saveRoutine(), 300);
     return () => clearTimeout(t);
   }, [name, exercises]);
+
+  useEffect(() => {
+    function handleOnline() {
+      if (saveStatus === 'offline') {
+        setSaveStatus('saving');
+        saveRoutine();
+      }
+    }
+    window.addEventListener('online', handleOnline);
+    return () => window.removeEventListener('online', handleOnline);
+  }, [saveStatus, name, exercises]);
 
   function deleteRoutine() {
     if (existing) {
@@ -76,8 +100,14 @@ export default function CreateWorkout() {
     }
   }
 
-  function handleDone() {
-    saveRoutine();
+  function handleSaveClick() {
+    setShowSave(true);
+  }
+
+  function handleSaveModal(val) {
+    setShowSave(false);
+    saveRoutine(val);
+    setName(val);
     navigate('/');
   }
 
@@ -142,13 +172,15 @@ export default function CreateWorkout() {
       <div className="text-sm text-center text-gray-500">
         {saveStatus === 'saving'
           ? 'Saving...'
+          : saveStatus === 'offline'
+          ? 'Saved locally; will sync when online'
           : saveStatus === 'error'
           ? 'Save failed'
           : 'All changes saved'}
       </div>
       <div className="flex gap-2">
-        <button className="flex-1 p-2 bg-green-600 text-white rounded" onClick={handleDone}>
-          Done
+        <button className="flex-1 p-2 bg-green-600 text-white rounded" onClick={handleSaveClick}>
+          Save
         </button>
         {existing && (
           <button className="flex-1 p-2 bg-red-600 text-white rounded" onClick={deleteRoutine}>
@@ -156,6 +188,18 @@ export default function CreateWorkout() {
           </button>
         )}
       </div>
+      <SaveWorkoutModal
+        open={showSave}
+        initialName={name}
+        onCancel={() => setShowSave(false)}
+        onSave={handleSaveModal}
+      />
+      <ConfirmDialog
+        open={confirmIndex !== null}
+        message="Delete this card?"
+        onCancel={() => setConfirmIndex(null)}
+        onConfirm={handleRemoveConfirmed}
+      />
     </div>
   );
 }
