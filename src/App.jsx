@@ -16,6 +16,7 @@ import ChooseWorkout from './pages/ChooseWorkout.jsx';
 import Logs from './pages/Logs.jsx';
 import Workout from './pages/Workout.jsx';
 import Summary from './pages/Summary.jsx';
+import NotFound from './pages/NotFound.jsx';
 import BottomNavigation from './components/BottomNavigation.jsx';
 
 export default function App() {
@@ -44,6 +45,7 @@ export default function App() {
           <Route path="/logs" element={<Logs />} />
           <Route path="/workout/:id" element={<Workout />} />
           <Route path="/summary/:index" element={<Summary />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
       <BottomNavigation />
