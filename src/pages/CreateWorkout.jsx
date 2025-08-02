@@ -21,16 +21,23 @@ export default function CreateWorkout() {
   const [confirmIndex, setConfirmIndex] = useState(null);
 
   function addExercise() {
-    const type = prompt('Exercise name');
-    if (!type) return;
-    const reps = parseInt(prompt('Reps', '10'), 10) || 0;
-    const weight = parseFloat(prompt('Weight', '0')) || 0;
-    setExercises([...exercises, { id: createId(), type, sets:1, reps, weight, rest:0 }]);
+    setExercises([
+      ...exercises,
+      { id: createId(), type: '', sets: 1, reps: 0, weight: 0, rest: 0 }
+    ]);
   }
 
   function addRest() {
-    const rest = parseInt(prompt('Rest seconds', '30'), 10) || 0;
-    setExercises([...exercises, { id: createId(), type:'Rest', sets:1, reps:0, weight:0, rest, restSet:true }]);
+    setExercises([
+      ...exercises,
+      { id: createId(), type: 'Rest', sets: 1, reps: 0, weight: 0, rest: 30, restSet: true }
+    ]);
+  }
+
+  function updateExercise(index, field, value) {
+    const list = [...exercises];
+    list[index] = { ...list[index], [field]: value };
+    setExercises(list);
   }
 
   function duplicate(idx) {
@@ -145,14 +152,52 @@ export default function CreateWorkout() {
                       ref={prov.innerRef}
                       {...prov.draggableProps}
                       {...prov.dragHandleProps}
-                      className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow flex justify-between items-center"
+                      className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow space-y-2"
                     >
-                      <span>
-                        {ex.restSet
-                          ? `Rest - ${ex.rest}s`
-                          : `${ex.type} - ${ex.reps} reps @ ${ex.weight}`}
-                      </span>
-                      <div className="flex gap-2">
+                      {ex.restSet ? (
+                        <div>
+                          <label className="block text-sm mb-1">Rest (sec)</label>
+                          <input
+                            type="number"
+                            className="w-full p-2 rounded border dark:bg-gray-700"
+                            value={ex.rest}
+                            onChange={e => updateExercise(idx, 'rest', parseInt(e.target.value, 10) || 0)}
+                          />
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          <input
+                            className="w-full p-2 rounded border dark:bg-gray-700"
+                            placeholder="Exercise"
+                            value={ex.type}
+                            onChange={e => updateExercise(idx, 'type', e.target.value)}
+                          />
+                          <div className="grid grid-cols-3 gap-2">
+                            <input
+                              type="number"
+                              className="w-full p-2 rounded border dark:bg-gray-700"
+                              placeholder="Sets"
+                              value={ex.sets}
+                              onChange={e => updateExercise(idx, 'sets', parseInt(e.target.value, 10) || 0)}
+                            />
+                            <input
+                              type="number"
+                              className="w-full p-2 rounded border dark:bg-gray-700"
+                              placeholder="Reps"
+                              value={ex.reps}
+                              onChange={e => updateExercise(idx, 'reps', parseInt(e.target.value, 10) || 0)}
+                            />
+                            <input
+                              type="number"
+                              className="w-full p-2 rounded border dark:bg-gray-700"
+                              placeholder="Weight"
+                              value={ex.weight}
+                              onChange={e => updateExercise(idx, 'weight', parseFloat(e.target.value) || 0)}
+                            />
+                          </div>
+                        </div>
+                      )}
+                      <div className="flex gap-2 justify-end">
                         <button className="text-blue-500" onClick={() => duplicate(idx)}>
                           Duplicate
                         </button>
