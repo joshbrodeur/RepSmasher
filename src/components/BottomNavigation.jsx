@@ -81,11 +81,11 @@ export default function BottomNavigation() {
   ];
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t border-slate-200 dark:border-slate-700 shadow-lg">
+    <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-t border-slate-200 dark:border-slate-700 shadow-lg">
       <nav
         role="navigation"
         aria-label="Bottom navigation"
-        className="flex justify-around items-center py-2 px-4 max-w-md mx-auto"
+        className="flex justify-around items-center w-full py-2 px-4"
       >
         {items.map((item) => (
           <NavLink
