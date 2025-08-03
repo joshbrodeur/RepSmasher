@@ -13,6 +13,7 @@ import { Routes, Route } from 'react-router-dom';
 import Home from './pages/Home.jsx';
 import CreateWorkout from './pages/CreateWorkout.jsx';
 import ChooseWorkout from './pages/ChooseWorkout.jsx';
+import Workouts from './pages/Workouts.jsx';
 import Logs from './pages/Logs.jsx';
 import Workout from './pages/Workout.jsx';
 import Summary from './pages/Summary.jsx';
@@ -43,7 +44,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/create" element={<CreateWorkout />} />
           <Route path="/choose" element={<ChooseWorkout />} />
-          <Route path="/workouts" element={<ChooseWorkout />} />
+          <Route path="/workouts" element={<Workouts />} />
           <Route path="/logs" element={<Logs />} />
           <Route path="/workout/:id" element={<Workout />} />
           <Route path="/summary/:index" element={<Summary />} />
