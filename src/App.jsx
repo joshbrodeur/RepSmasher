@@ -3,7 +3,7 @@ Redesign this screen using Tailwind CSS:
 - Use a dark theme
 - Add a header with title + theme toggle
 - Wrap the stats in a rounded card
-- Use bottom nav with icons for Home, Create, Logs
+- Use bottom nav with icons for Home, Create, Workouts, Logs
 - Use large touch targets and spacing
 - Follow a workout app aesthetic
 */
