@@ -42,6 +42,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/create" element={<CreateWorkout />} />
           <Route path="/choose" element={<ChooseWorkout />} />
+          <Route path="/workouts" element={<ChooseWorkout />} />
           <Route path="/logs" element={<Logs />} />
           <Route path="/workout/:id" element={<Workout />} />
           <Route path="/summary/:index" element={<Summary />} />
