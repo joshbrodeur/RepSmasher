@@ -11,5 +11,8 @@ export default defineConfig({
   preview: {
     host: true,
     allowedHosts: ['.replit.dev']
+  },
+  test: {
+    environment: 'jsdom'
   }
 });
