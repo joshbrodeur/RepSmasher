@@ -44,13 +44,13 @@ export default function Home() {
   return (
     <div className="max-w-md mx-auto space-y-4 pb-20">
       {lastWorkout && lastRoutine && (
-        <div className="bg-gradient-to-r from-blue-500 to-blue-600 text-white p-4 rounded-lg shadow flex justify-between items-center">
+        <div className="bg-gradient-to-r from-purple-500 to-purple-600 text-white p-4 rounded-lg shadow flex justify-between items-center">
           <div>
             <h3 className="font-semibold">Quick Workout</h3>
-            <p className="text-blue-100 text-sm">Repeat: {lastRoutine.name}</p>
+            <p className="text-purple-100 text-sm">Repeat: {lastRoutine.name}</p>
           </div>
           <button
-            className="p-2 bg-white text-blue-600 rounded shadow"
+            className="p-2 bg-white text-purple-600 rounded shadow"
             onClick={() => navigate(`/workout/${lastRoutine.id}`)}
           >
             Start
