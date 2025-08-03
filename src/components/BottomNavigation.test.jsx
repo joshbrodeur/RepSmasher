@@ -31,14 +31,22 @@ describe('BottomNavigation', () => {
     expect(nav).toBeTruthy();
   });
 
-  it('marks the active link with aria-current', () => {
+  const routes = [
+    { path: '/', label: /Home/i },
+    { path: '/create', label: /Create/i },
+    { path: '/workouts', label: /Workouts/i },
+    { path: '/logs', label: /Logs/i },
+  ];
+
+  it.each(routes)('marks %s link as active', ({ path, label }) => {
     render(
-      <MemoryRouter initialEntries={["/create"]}>
+      <MemoryRouter initialEntries={[path]}>
         <BottomNavigation />
       </MemoryRouter>
     );
 
-    expect(screen.getByLabelText(/Create/i)).toHaveAttribute('aria-current', 'page');
-    expect(screen.getByLabelText(/Home/i)).not.toHaveAttribute('aria-current');
+    const activeLink = screen.getByLabelText(label);
+    expect(activeLink).toHaveAttribute('aria-current', 'page');
+    expect(activeLink).toHaveClass('text-blue-600');
   });
 });
