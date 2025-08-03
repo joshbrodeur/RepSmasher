@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useStore } from '../store.jsx';
 import { createId } from '../storage.js';
 
@@ -49,11 +48,22 @@ export default function CreateWorkout() {
     setExercises(exercises.filter((_, i) => i !== idx));
   }
 
-  function handleDragEnd(result) {
-    if (!result.destination) return;
+  const [dragIndex, setDragIndex] = useState(null);
+
+  function handleDragStart(index) {
+    setDragIndex(index);
+  }
+
+  function handleDragOver(e) {
+    e.preventDefault();
+  }
+
+  function handleDrop(index) {
+    if (dragIndex === null || dragIndex === index) return;
     const list = Array.from(exercises);
-    const [item] = list.splice(result.source.index, 1);
-    list.splice(result.destination.index, 0, item);
+    const [item] = list.splice(dragIndex, 1);
+    list.splice(index, 0, item);
+    setDragIndex(null);
     setExercises(list);
   }
 
@@ -107,28 +117,21 @@ export default function CreateWorkout() {
           Add Rest
         </button>
       </div>
-      <DragDropContext onDragEnd={handleDragEnd}>
-        <Droppable droppableId="exercises">
-          {(provided) => (
-            <ul
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-              className="space-y-2"
-            >
-              {exercises.map((ex, idx) => (
-                <Draggable key={ex.id} draggableId={ex.id} index={idx}>
-                  {(prov) => (
-                    <li
-                      ref={prov.innerRef}
-                      {...prov.draggableProps}
-                      {...prov.dragHandleProps}
-                      className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow space-y-2"
-                    >
-                      {ex.restSet ? (
-                        <div>
-                          <label className="block text-sm mb-1">Rest (sec)</label>
-                          <input
-                            type="number"
+      <ul className="space-y-2">
+        {exercises.map((ex, idx) => (
+          <li
+            key={ex.id}
+            draggable
+            onDragStart={() => handleDragStart(idx)}
+            onDragOver={handleDragOver}
+            onDrop={() => handleDrop(idx)}
+            className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow space-y-2"
+          >
+            {ex.restSet ? (
+              <div>
+                <label className="block text-sm mb-1">Rest (sec)</label>
+                <input
+                  type="number"
                             className="w-full p-2 rounded border dark:bg-gray-700"
                             value={ex.rest}
                             onChange={e => updateExercise(idx, 'rest', parseInt(e.target.value, 10) || 0)}
@@ -167,23 +170,17 @@ export default function CreateWorkout() {
                           </div>
                         </div>
                       )}
-                      <div className="flex gap-2 justify-end">
-                        <button className="text-blue-500" onClick={() => duplicate(idx)}>
-                          Duplicate
-                        </button>
-                        <button className="text-red-500" onClick={() => remove(idx)}>
-                          Delete
-                        </button>
-                      </div>
-                    </li>
-                  )}
-                </Draggable>
-              ))}
-              {provided.placeholder}
-            </ul>
-          )}
-        </Droppable>
-      </DragDropContext>
+            <div className="flex gap-2 justify-end">
+              <button className="text-blue-500" onClick={() => duplicate(idx)}>
+                Duplicate
+              </button>
+              <button className="text-red-500" onClick={() => remove(idx)}>
+                Delete
+              </button>
+            </div>
+          </li>
+        ))}
+      </ul>
       <div className="text-sm text-center text-gray-500">
         {saveStatus === 'saving'
           ? 'Saving...'
