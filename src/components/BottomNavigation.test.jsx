@@ -5,12 +5,14 @@ import { MemoryRouter } from 'react-router-dom';
 import BottomNavigation from './BottomNavigation.jsx';
 import { navigationItems } from '../config/navigation.js';
 
+const future = { v7_startTransition: true, v7_relativeSplatPath: true };
+
 afterEach(cleanup);
 
 describe('BottomNavigation', () => {
   it('renders navigation links', () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter future={future}>
         <BottomNavigation items={navigationItems} />
       </MemoryRouter>
     );
@@ -22,7 +24,7 @@ describe('BottomNavigation', () => {
 
   it('wraps links in a nav element with accessibility attributes', () => {
     render(
-      <MemoryRouter>
+      <MemoryRouter future={future}>
         <BottomNavigation items={navigationItems} />
       </MemoryRouter>
     );
@@ -38,7 +40,7 @@ describe('BottomNavigation', () => {
 
   it.each(routes)('marks %s link as active', ({ path, label }) => {
     render(
-      <MemoryRouter initialEntries={[path]}>
+      <MemoryRouter initialEntries={[path]} future={future}>
         <BottomNavigation items={navigationItems} />
       </MemoryRouter>
     );
