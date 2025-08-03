@@ -3,6 +3,7 @@ import { render, screen, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { MemoryRouter } from 'react-router-dom';
 import BottomNavigation from './BottomNavigation.jsx';
+import { navigationItems } from '../config/navigation.js';
 
 afterEach(cleanup);
 
@@ -10,20 +11,19 @@ describe('BottomNavigation', () => {
   it('renders navigation links', () => {
     render(
       <MemoryRouter>
-        <BottomNavigation />
+        <BottomNavigation items={navigationItems} />
       </MemoryRouter>
     );
 
-    expect(screen.getByLabelText(/Home/i)).toBeTruthy();
-    expect(screen.getByLabelText(/Create/i)).toBeTruthy();
-    expect(screen.getByLabelText(/Workouts/i)).toBeTruthy();
-    expect(screen.getByLabelText(/Logs/i)).toBeTruthy();
+    navigationItems.forEach(({ label }) => {
+      expect(screen.getByLabelText(new RegExp(label, 'i'))).toBeTruthy();
+    });
   });
 
   it('wraps links in a nav element with accessibility attributes', () => {
     render(
       <MemoryRouter>
-        <BottomNavigation />
+        <BottomNavigation items={navigationItems} />
       </MemoryRouter>
     );
 
@@ -31,17 +31,15 @@ describe('BottomNavigation', () => {
     expect(nav).toBeTruthy();
   });
 
-  const routes = [
-    { path: '/', label: /Home/i },
-    { path: '/create', label: /Create/i },
-    { path: '/workouts', label: /Workouts/i },
-    { path: '/logs', label: /Logs/i },
-  ];
+  const routes = navigationItems.map(item => ({
+    path: item.path,
+    label: new RegExp(item.label, 'i'),
+  }));
 
   it.each(routes)('marks %s link as active', ({ path, label }) => {
     render(
       <MemoryRouter initialEntries={[path]}>
-        <BottomNavigation />
+        <BottomNavigation items={navigationItems} />
       </MemoryRouter>
     );
 
