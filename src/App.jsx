@@ -18,6 +18,7 @@ import Workout from './pages/Workout.jsx';
 import Summary from './pages/Summary.jsx';
 import NotFound from './pages/NotFound.jsx';
 import BottomNavigation from './components/BottomNavigation.jsx';
+import { navigationItems } from './config/navigation.js';
 
 export default function App() {
   const [dark, setDark] = useState(true);
@@ -49,7 +50,7 @@ export default function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
-      <BottomNavigation />
+      <BottomNavigation items={navigationItems} />
     </div>
   );
 }
