@@ -10,8 +10,7 @@
     "preview": "vite preview --host",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist -r https://github.com/joshbrodeur/RepSmasher.git",
-    "test": "vitest",
-    "audit": "npm audit"
+    "test": "vitest"
   },
   "keywords": [],
   "author": "",
