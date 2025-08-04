@@ -1,6 +1,8 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useStore } from '../store.jsx';
 import { createId } from '../storage.js';
+import { Card, Button, Badge } from '../components/ui';
+import { Dumbbell, Pencil, Copy, Trash2 } from 'lucide-react';
 
 export default function Workouts() {
   const { routines, setRoutines } = useStore();
@@ -28,7 +30,9 @@ export default function Workouts() {
     return (
       <div className="max-w-md mx-auto text-center">
         <p className="text-gray-500 mb-4">No workouts saved.</p>
-        <Link className="text-blue-600" to="/create">Create your first workout</Link>
+        <Button onClick={() => navigate('/create')}>
+          Create your first workout
+        </Button>
       </div>
     );
   }
@@ -36,25 +40,45 @@ export default function Workouts() {
   return (
     <div className="max-w-md mx-auto space-y-4">
       {routines.map(r => (
-        <div
-          key={r.id}
-          className="bg-white dark:bg-gray-800 p-4 rounded-lg shadow"
-        >
+        <Card key={r.id} className="p-4">
           <div
             className="cursor-pointer"
             onClick={() => navigate(`/workout/${r.id}`)}
           >
-            <h3 className="text-lg font-bold">{r.name}</h3>
-            <p className="text-sm text-gray-500">
+            <h3 className="text-lg font-bold flex items-center gap-2">
+              <Dumbbell className="w-4 h-4" /> {r.name}
+            </h3>
+            <Badge variant="secondary" className="mt-1">
               {r.exercises.length} exercise{r.exercises.length !== 1 ? 's' : ''}
-            </p>
+            </Badge>
           </div>
-          <div className="flex justify-end gap-4 mt-4 text-sm">
-            <Link className="text-blue-600" to={`/create?id=${r.id}`}>Edit</Link>
-            <button className="text-blue-600" onClick={() => duplicate(r.id)}>Duplicate</button>
-            <button className="text-red-500" onClick={() => remove(r.id)}>Delete</button>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(`/create?id=${r.id}`)}
+              aria-label="Edit workout"
+            >
+              <Pencil className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => duplicate(r.id)}
+              aria-label="Duplicate workout"
+            >
+              <Copy className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => remove(r.id)}
+              aria-label="Delete workout"
+            >
+              <Trash2 className="w-4 h-4 text-red-500" />
+            </Button>
           </div>
-        </div>
+        </Card>
       ))}
     </div>
   );
