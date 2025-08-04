@@ -1,11 +1,19 @@
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '../store.jsx';
 import { createId } from '../storage.js';
-import { Card, Button, Badge } from '../components/ui';
-import { Dumbbell, Pencil, Copy, Trash2 } from 'lucide-react';
+import { Card, Button } from '../components/ui';
+import {
+  Dumbbell,
+  Pencil,
+  Copy,
+  Trash2,
+  Play,
+  Clock,
+  Hash,
+} from 'lucide-react';
 
 export default function Workouts() {
-  const { routines, setRoutines } = useStore();
+  const { routines, setRoutines, workouts } = useStore();
   const navigate = useNavigate();
 
   function remove(id) {
@@ -39,47 +47,102 @@ export default function Workouts() {
 
   return (
     <div className="max-w-md mx-auto space-y-4">
-      {routines.map(r => (
-        <Card key={r.id} className="p-4">
-          <div
-            className="cursor-pointer"
-            onClick={() => navigate(`/workout/${r.id}`)}
-          >
-            <h3 className="text-lg font-bold flex items-center gap-2">
-              <Dumbbell className="w-4 h-4" /> {r.name}
-            </h3>
-            <Badge variant="secondary" className="mt-1">
-              {r.exercises.length} exercise{r.exercises.length !== 1 ? 's' : ''}
-            </Badge>
-          </div>
-          <div className="flex justify-end gap-2 mt-4">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate(`/create?id=${r.id}`)}
-              aria-label="Edit workout"
-            >
-              <Pencil className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => duplicate(r.id)}
-              aria-label="Duplicate workout"
-            >
-              <Copy className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => remove(r.id)}
-              aria-label="Delete workout"
-            >
-              <Trash2 className="w-4 h-4 text-red-500" />
-            </Button>
-          </div>
-        </Card>
-      ))}
+      <h1 className="text-2xl font-bold text-center">Workouts</h1>
+      {routines.map(r => {
+        const stats = workouts
+          .filter(w => w.routineId === r.id)
+          .reduce(
+            (acc, w) => {
+              acc.sessions += 1;
+              acc.totalTime += w.totalTime;
+              acc.lastDate =
+                !acc.lastDate || new Date(w.date) > new Date(acc.lastDate)
+                  ? w.date
+                  : acc.lastDate;
+              return acc;
+            },
+            { sessions: 0, totalTime: 0, lastDate: null }
+          );
+        const avgTime = stats.sessions
+          ? Math.round(stats.totalTime / stats.sessions / 60000)
+          : 0;
+        const lastDate = stats.lastDate
+          ? new Date(stats.lastDate).toLocaleDateString()
+          : 'Never';
+
+        return (
+          <Card key={r.id} className="p-4 space-y-4">
+            <div className="flex items-start justify-between">
+              <div>
+                <h3 className="text-lg font-bold flex items-center gap-2">
+                  <Dumbbell className="w-4 h-4" /> {r.name}
+                </h3>
+                <p className="text-sm text-gray-500">Last: {lastDate}</p>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => navigate(`/create?id=${r.id}`)}
+                  aria-label="Edit workout"
+                >
+                  <Pencil className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => duplicate(r.id)}
+                  aria-label="Duplicate workout"
+                >
+                  <Copy className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => remove(r.id)}
+                  aria-label="Delete workout"
+                >
+                  <Trash2 className="w-4 h-4 text-red-500" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 text-center text-sm">
+              <div>
+                <div className="flex justify-center mb-1">
+                  <Clock className="w-4 h-4 text-slate-600" />
+                </div>
+                <p className="font-semibold">{avgTime}m</p>
+                <p className="text-xs text-gray-500">Avg Time</p>
+              </div>
+              <div>
+                <div className="flex justify-center mb-1">
+                  <Dumbbell className="w-4 h-4 text-slate-600" />
+                </div>
+                <p className="font-semibold">{r.exercises.length}</p>
+                <p className="text-xs text-gray-500">Exercises</p>
+              </div>
+              <div>
+                <div className="flex justify-center mb-1">
+                  <Hash className="w-4 h-4 text-slate-600" />
+                </div>
+                <p className="font-semibold">{stats.sessions}</p>
+                <p className="text-xs text-gray-500">Sessions</p>
+              </div>
+            </div>
+
+            <div className="flex mt-2">
+              <Button
+                size="sm"
+                onClick={() => navigate(`/workout/${r.id}`)}
+                className="bg-green-500 hover:bg-green-600 text-white"
+              >
+                <Play className="w-4 h-4" /> Start
+              </Button>
+            </div>
+          </Card>
+        );
+      })}
     </div>
   );
 }
