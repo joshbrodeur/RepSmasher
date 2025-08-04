@@ -17,6 +17,26 @@ describe('storage utilities', () => {
     expect(load('key', null)).toEqual(data);
   });
 
+  it('returns default when stored JSON is invalid', () => {
+    localStorage.setItem('bad', '{');
+    expect(load('bad', 'fallback')).toBe('fallback');
+  });
+
+  it('returns default when storage throws', () => {
+    const original = localStorage.getItem;
+    localStorage.getItem = () => {
+      throw new Error('failed');
+    };
+    expect(load('any', 'fallback')).toBe('fallback');
+    localStorage.getItem = original;
+  });
+
+  it('save surfaces JSON errors', () => {
+    const obj = {};
+    obj.self = obj;
+    expect(() => save('x', obj)).toThrow();
+  });
+
   it('createId generates unique strings', () => {
     const id1 = createId();
     const id2 = createId();
