@@ -13,6 +13,8 @@ export default function Workout() {
   const [records, setRecords] = useState([]);
   const [exerciseStart, setExerciseStart] = useState(null);
   const [timer, setTimer] = useState(0);
+  const [reps, setReps] = useState(0);
+  const [weight, setWeight] = useState(0);
 
   useEffect(() => {
     let t;
@@ -21,6 +23,14 @@ export default function Workout() {
     }
     return () => clearInterval(t);
   }, [startTime]);
+
+  useEffect(() => {
+    if (routine) {
+      const ex = routine.exercises[index];
+      setReps(ex.reps || 0);
+      setWeight(ex.weight || 0);
+    }
+  }, [index, routine]);
 
   function start() {
     setStartTime(Date.now());
@@ -80,20 +90,25 @@ export default function Workout() {
               <h3 className="text-xl text-center">{ex.type}</h3>
               <label className="block">
                 Reps
-                <input id="reps" className="block w-full p-2 rounded border dark:bg-gray-700" type="number" defaultValue={ex.reps} />
+                <input
+                  className="block w-full p-2 rounded border dark:bg-gray-700"
+                  type="number"
+                  value={reps}
+                  onChange={e => setReps(parseInt(e.target.value, 10) || 0)}
+                />
               </label>
               <label className="block">
                 Weight
-                <input id="weight" className="block w-full p-2 rounded border dark:bg-gray-700" type="number" defaultValue={ex.weight} />
+                <input
+                  className="block w-full p-2 rounded border dark:bg-gray-700"
+                  type="number"
+                  value={weight}
+                  onChange={e => setWeight(parseFloat(e.target.value) || 0)}
+                />
               </label>
               <button
                 className="w-full p-2 bg-green-600 text-white rounded"
-                onClick={() =>
-                  next(
-                    parseInt(document.getElementById('reps').value, 10) || 0,
-                    parseFloat(document.getElementById('weight').value) || 0
-                  )
-                }
+                onClick={() => next(reps, weight)}
               >
                 Done
               </button>
