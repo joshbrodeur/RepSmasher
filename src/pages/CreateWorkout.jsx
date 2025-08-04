@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useStore } from '../store.jsx';
 import { createId } from '../storage.js';
@@ -67,24 +67,26 @@ export default function CreateWorkout() {
     setExercises(list);
   }
 
-  function saveRoutine() {
+  const saveRoutine = useCallback(() => {
     const routine = { id: routineId, name: name || 'Routine', exercises };
-    const list = routines.some(r => r.id === routineId)
-      ? routines.map(r => r.id === routineId ? routine : r)
-      : [...routines, routine];
     try {
-      setRoutines(list);
+      setRoutines(prev => {
+        const list = prev.some(r => r.id === routineId)
+          ? prev.map(r => (r.id === routineId ? routine : r))
+          : [...prev, routine];
+        return list;
+      });
       setSaveStatus('saved');
     } catch {
       setSaveStatus('error');
     }
-  }
+  }, [routineId, name, exercises, setRoutines]);
 
   useEffect(() => {
     setSaveStatus('saving');
     const t = setTimeout(saveRoutine, 300);
     return () => clearTimeout(t);
-  }, [name, exercises]);
+  }, [saveRoutine]);
 
   function deleteRoutine() {
     if (existing) {
