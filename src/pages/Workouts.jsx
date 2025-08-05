@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import { useState, useRef } from 'react';
 import { useStore } from '../store.jsx';
 import { createId } from '../storage.js';
 import { Card, Button } from '../components/ui';
@@ -16,6 +17,8 @@ import {
 export default function Workouts() {
   const { routines, setRoutines, workouts } = useStore();
   const navigate = useNavigate();
+  const [isDuplicating, setIsDuplicating] = useState(false);
+  const isDuplicatingRef = useRef(false);
 
   function remove(id) {
     if (confirm('Delete this routine?')) {
@@ -24,15 +27,29 @@ export default function Workouts() {
   }
 
   function duplicate(id) {
+    if (isDuplicatingRef.current) return;
+    isDuplicatingRef.current = true;
+    setIsDuplicating(true);
+
     const routine = routines.find(r => r.id === id);
-    if (!routine) return;
+    if (!routine) {
+      isDuplicatingRef.current = false;
+      setIsDuplicating(false);
+      return;
+    }
+
     const copy = {
       ...routine,
       id: createId(),
       name: routine.name + ' Copy',
       exercises: routine.exercises.map(ex => ({ ...ex, id: createId() })),
     };
-    setRoutines([...routines, copy]);
+    setRoutines(prev => [...prev, copy]);
+
+    setTimeout(() => {
+      isDuplicatingRef.current = false;
+      setIsDuplicating(false);
+    }, 0);
   }
 
   if (routines.length === 0) {
@@ -94,6 +111,7 @@ export default function Workouts() {
                   size="sm"
                   onClick={() => duplicate(r.id)}
                   aria-label="Duplicate workout"
+                  disabled={isDuplicating}
                 >
                   <Copy className="w-4 h-4" />
                 </Button>
