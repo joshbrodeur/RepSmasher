@@ -8,6 +8,7 @@ import {
   Copy,
   Trash2,
   Play,
+  Eye,
   Clock,
   Hash,
 } from 'lucide-react';
@@ -131,13 +132,20 @@ export default function Workouts() {
               </div>
             </div>
 
-            <div className="flex mt-2">
+            <div className="flex gap-2 mt-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(`/logs?routine=${r.id}`)}
+              >
+                <Eye className="w-4 h-4 mr-2" /> View Stats
+              </Button>
               <Button
                 size="sm"
                 onClick={() => navigate(`/workout/${r.id}`)}
                 className="bg-green-500 hover:bg-green-600 text-white"
               >
-                <Play className="w-4 h-4" /> Start
+                <Play className="w-4 h-4 mr-2" /> Start
               </Button>
             </div>
           </Card>
