@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useStore } from '../store.jsx';
 import { createId } from '../storage.js';
@@ -11,9 +11,7 @@ export default function CreateWorkout() {
 
   const existing = routines.find(r => r.id === editId);
   const routineIdRef = useRef(existing ? existing.id : createId());
-  const [name, setName] = useState(existing?.name || '');
   const [exercises, setExercises] = useState(() => existing ? [...existing.exercises] : []);
-  const [saveStatus, setSaveStatus] = useState('saved');
 
   function addExercise() {
     setExercises([
@@ -67,26 +65,14 @@ export default function CreateWorkout() {
     setExercises(list);
   }
 
-  const saveRoutine = useCallback(() => {
-    const routine = { id: routineIdRef.current, name: name || 'Routine', exercises };
-    try {
-      setRoutines(prev => {
-        const list = prev.some(r => r.id === routineIdRef.current)
-          ? prev.map(r => (r.id === routineIdRef.current ? routine : r))
-          : [...prev, routine];
-        return list;
-      });
-      setSaveStatus('saved');
-    } catch {
-      setSaveStatus('error');
-    }
-  }, [name, exercises, setRoutines]);
-
-  useEffect(() => {
-    setSaveStatus('saving');
-    const t = setTimeout(saveRoutine, 300);
-    return () => clearTimeout(t);
-  }, [saveRoutine]);
+  function saveRoutine(name) {
+    const routine = { id: routineIdRef.current, name, exercises };
+    setRoutines(prev => {
+      return prev.some(r => r.id === routineIdRef.current)
+        ? prev.map(r => (r.id === routineIdRef.current ? routine : r))
+        : [...prev, routine];
+    });
+  }
 
   function deleteRoutine() {
     if (existing) {
@@ -96,7 +82,9 @@ export default function CreateWorkout() {
   }
 
   function handleDone() {
-    saveRoutine();
+    const workoutName = window.prompt('Enter workout name', existing?.name || '');
+    if (!workoutName) return;
+    saveRoutine(workoutName);
     navigate('/');
   }
 
@@ -105,12 +93,6 @@ export default function CreateWorkout() {
       <h2 className="text-lg font-bold text-center">
         {existing ? 'Edit Workout' : 'Create Workout'}
       </h2>
-      <input
-        className="w-full p-2 rounded border dark:bg-gray-700"
-        value={name}
-        onChange={e => setName(e.target.value)}
-        placeholder="Workout name"
-      />
       <div className="flex gap-2">
         <button className="flex-1 p-2 bg-blue-600 text-white rounded" onClick={addExercise}>
           Add Exercise
@@ -134,44 +116,52 @@ export default function CreateWorkout() {
                 <label className="block text-sm mb-1">Rest (sec)</label>
                 <input
                   type="number"
-                            className="w-full p-2 rounded border dark:bg-gray-700"
-                            value={ex.rest}
-                            onChange={e => updateExercise(idx, 'rest', parseInt(e.target.value, 10) || 0)}
-                          />
-                        </div>
-                      ) : (
-                        <div className="space-y-2">
-                          <input
-                            className="w-full p-2 rounded border dark:bg-gray-700"
-                            placeholder="Exercise"
-                            value={ex.type}
-                            onChange={e => updateExercise(idx, 'type', e.target.value)}
-                          />
-                          <div className="grid grid-cols-3 gap-2">
-                            <input
-                              type="number"
-                              className="w-full p-2 rounded border dark:bg-gray-700"
-                              placeholder="Sets"
-                              value={ex.sets}
-                              onChange={e => updateExercise(idx, 'sets', parseInt(e.target.value, 10) || 0)}
-                            />
-                            <input
-                              type="number"
-                              className="w-full p-2 rounded border dark:bg-gray-700"
-                              placeholder="Reps"
-                              value={ex.reps}
-                              onChange={e => updateExercise(idx, 'reps', parseInt(e.target.value, 10) || 0)}
-                            />
-                            <input
-                              type="number"
-                              className="w-full p-2 rounded border dark:bg-gray-700"
-                              placeholder="Weight"
-                              value={ex.weight}
-                              onChange={e => updateExercise(idx, 'weight', parseFloat(e.target.value) || 0)}
-                            />
-                          </div>
-                        </div>
-                      )}
+                  className="w-full p-2 rounded border dark:bg-gray-700"
+                  value={ex.rest}
+                  onChange={e => updateExercise(idx, 'rest', parseInt(e.target.value, 10) || 0)}
+                />
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div>
+                  <label className="block text-sm mb-1">Exercise</label>
+                  <input
+                    className="w-full p-2 rounded border dark:bg-gray-700"
+                    value={ex.type}
+                    onChange={e => updateExercise(idx, 'type', e.target.value)}
+                  />
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <label className="block text-sm mb-1">Sets</label>
+                    <input
+                      type="number"
+                      className="w-full p-2 rounded border dark:bg-gray-700"
+                      value={ex.sets}
+                      onChange={e => updateExercise(idx, 'sets', parseInt(e.target.value, 10) || 0)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm mb-1">Reps</label>
+                    <input
+                      type="number"
+                      className="w-full p-2 rounded border dark:bg-gray-700"
+                      value={ex.reps}
+                      onChange={e => updateExercise(idx, 'reps', parseInt(e.target.value, 10) || 0)}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm mb-1">Weight</label>
+                    <input
+                      type="number"
+                      className="w-full p-2 rounded border dark:bg-gray-700"
+                      value={ex.weight}
+                      onChange={e => updateExercise(idx, 'weight', parseFloat(e.target.value) || 0)}
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="flex gap-2 justify-end">
               <button className="text-blue-500" onClick={() => duplicate(idx)}>
                 Duplicate
@@ -183,13 +173,6 @@ export default function CreateWorkout() {
           </li>
         ))}
       </ul>
-      <div className="text-sm text-center text-gray-500">
-        {saveStatus === 'saving'
-          ? 'Saving...'
-          : saveStatus === 'error'
-          ? 'Save failed'
-          : 'All changes saved'}
-      </div>
       <div className="flex gap-2">
         <button className="flex-1 p-2 bg-green-600 text-white rounded" onClick={handleDone}>
           Done
