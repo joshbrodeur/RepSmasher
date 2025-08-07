@@ -55,4 +55,33 @@ describe('CreateWorkout page', () => {
 
     expect(screen.getByText(/home page/i)).toBeInTheDocument();
   });
+
+  it('does not create duplicate routines on multiple autosaves', async () => {
+    render(
+      <MemoryRouter initialEntries={['/create']} future={future}>
+        <Routes>
+          <Route path="/create" element={<CreateWorkout />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    // Allow initial autosave to run
+    await act(async () => {
+      vi.runAllTimers();
+    });
+
+    expect(mockStore.routines).toHaveLength(1);
+    expect(mockStore.routines[0]).toMatchObject({ name: 'Routine' });
+
+    fireEvent.change(screen.getByPlaceholderText(/workout name/i), {
+      target: { value: 'Leg Day' },
+    });
+
+    await act(async () => {
+      vi.runAllTimers();
+    });
+
+    expect(mockStore.routines).toHaveLength(1);
+    expect(mockStore.routines[0]).toMatchObject({ name: 'Leg Day' });
+  });
 });
