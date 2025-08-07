@@ -11,7 +11,19 @@ export default function CreateWorkout() {
 
   const existing = routines.find(r => r.id === editId);
   const routineIdRef = useRef(existing ? existing.id : createId());
-  const [exercises, setExercises] = useState(() => existing ? [...existing.exercises] : []);
+  const [exercises, setExercises] = useState(() =>
+    existing
+      ? existing.exercises.map(ex => ({
+          id: ex.id ?? createId(),
+          type: ex.type ?? '',
+          eng: ex.eng ?? 0,
+          reps: ex.reps ?? 0,
+          weight: ex.weight ?? 0,
+          rest: ex.rest ?? 0,
+          restSet: ex.restSet ?? false
+        }))
+      : []
+  );
 
   function addExercise() {
     setExercises([
@@ -127,7 +139,7 @@ export default function CreateWorkout() {
                 <input
                   type="number"
                   className="w-full p-2 rounded border dark:bg-gray-700"
-                  value={ex.rest}
+                  value={ex.rest ?? 0}
                   onChange={e => updateExercise(idx, 'rest', parseInt(e.target.value, 10) || 0)}
                 />
               </div>
@@ -138,7 +150,7 @@ export default function CreateWorkout() {
                   <input
                     list="exercise-options"
                     className="w-full p-2 rounded border dark:bg-gray-700"
-                    value={ex.type}
+                    value={ex.type ?? ''}
                     onChange={e => updateExercise(idx, 'type', e.target.value)}
                   />
                 </div>
@@ -148,7 +160,7 @@ export default function CreateWorkout() {
                     <input
                       type="number"
                       className="w-full p-2 rounded border dark:bg-gray-700"
-                      value={ex.eng}
+                      value={ex.eng ?? 0}
                       onChange={e => updateExercise(idx, 'eng', parseInt(e.target.value, 10) || 0)}
                     />
                   </div>
@@ -157,7 +169,7 @@ export default function CreateWorkout() {
                     <input
                       type="number"
                       className="w-full p-2 rounded border dark:bg-gray-700"
-                      value={ex.reps}
+                      value={ex.reps ?? 0}
                       onChange={e => updateExercise(idx, 'reps', parseInt(e.target.value, 10) || 0)}
                     />
                   </div>
@@ -166,7 +178,7 @@ export default function CreateWorkout() {
                     <input
                       type="number"
                       className="w-full p-2 rounded border dark:bg-gray-700"
-                      value={ex.weight}
+                      value={ex.weight ?? 0}
                       onChange={e => updateExercise(idx, 'weight', parseFloat(e.target.value) || 0)}
                     />
                   </div>
