@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useStore } from '../store.jsx';
 import { createId } from '../storage.js';
@@ -10,7 +10,7 @@ export default function CreateWorkout() {
   const editId = searchParams.get('id');
 
   const existing = routines.find(r => r.id === editId);
-  const routineId = existing ? existing.id : createId();
+  const routineIdRef = useRef(existing ? existing.id : createId());
   const [name, setName] = useState(existing?.name || '');
   const [exercises, setExercises] = useState(() => existing ? [...existing.exercises] : []);
   const [saveStatus, setSaveStatus] = useState('saved');
@@ -68,11 +68,11 @@ export default function CreateWorkout() {
   }
 
   const saveRoutine = useCallback(() => {
-    const routine = { id: routineId, name: name || 'Routine', exercises };
+    const routine = { id: routineIdRef.current, name: name || 'Routine', exercises };
     try {
       setRoutines(prev => {
-        const list = prev.some(r => r.id === routineId)
-          ? prev.map(r => (r.id === routineId ? routine : r))
+        const list = prev.some(r => r.id === routineIdRef.current)
+          ? prev.map(r => (r.id === routineIdRef.current ? routine : r))
           : [...prev, routine];
         return list;
       });
@@ -80,7 +80,7 @@ export default function CreateWorkout() {
     } catch {
       setSaveStatus('error');
     }
-  }, [routineId, name, exercises, setRoutines]);
+  }, [name, exercises, setRoutines]);
 
   useEffect(() => {
     setSaveStatus('saving');
