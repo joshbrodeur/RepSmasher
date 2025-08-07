@@ -97,4 +97,31 @@ describe('CreateWorkout page', () => {
 
     expect(mockStore.exerciseNames).toContain('Push Ups');
   });
+
+  it('edits existing routine with missing fields without warnings', async () => {
+    mockStore.routines = [
+      {
+        id: '1',
+        name: 'Old Routine',
+        exercises: [{ type: 'Push Ups' }]
+      }
+    ];
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+
+    render(
+      <MemoryRouter initialEntries={['/create?id=1']} future={future}>
+        <Routes>
+          <Route path="/create" element={<CreateWorkout />} />
+          <Route path="/" element={<div />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    await act(async () => {
+      fireEvent.change(screen.getByRole('combobox'), { target: { value: 'Pull Ups' } });
+    });
+
+    expect(errorSpy).not.toHaveBeenCalled();
+    errorSpy.mockRestore();
+  });
 });
