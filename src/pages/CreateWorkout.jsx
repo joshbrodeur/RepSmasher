@@ -4,7 +4,7 @@ import { useStore } from '../store.jsx';
 import { createId } from '../storage.js';
 
 export default function CreateWorkout() {
-  const { routines, setRoutines } = useStore();
+  const { routines, setRoutines, exerciseNames, setExerciseNames } = useStore();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const editId = searchParams.get('id');
@@ -16,14 +16,14 @@ export default function CreateWorkout() {
   function addExercise() {
     setExercises([
       ...exercises,
-      { id: createId(), type: '', sets: 1, reps: 0, weight: 0, rest: 0 }
+      { id: createId(), type: '', eng: 0, reps: 0, weight: 0, rest: 0 }
     ]);
   }
 
   function addRest() {
     setExercises([
       ...exercises,
-      { id: createId(), type: 'Rest', sets: 1, reps: 0, weight: 0, rest: 30, restSet: true }
+      { id: createId(), type: 'Rest', eng: 0, reps: 0, weight: 0, rest: 30, restSet: true }
     ]);
   }
 
@@ -85,6 +85,11 @@ export default function CreateWorkout() {
     const workoutName = window.prompt('Enter workout name', existing?.name || '');
     if (!workoutName) return;
     saveRoutine(workoutName);
+    const names = new Set(exerciseNames);
+    exercises.forEach(ex => {
+      if (ex.type && ex.type !== 'Rest') names.add(ex.type);
+    });
+    setExerciseNames(Array.from(names));
     navigate('/');
   }
 
@@ -93,6 +98,11 @@ export default function CreateWorkout() {
       <h2 className="text-lg font-bold text-center">
         {existing ? 'Edit Workout' : 'Create Workout'}
       </h2>
+      <datalist id="exercise-options">
+        {exerciseNames.map(name => (
+          <option key={name} value={name} />
+        ))}
+      </datalist>
       <div className="flex gap-2">
         <button className="flex-1 p-2 bg-blue-600 text-white rounded" onClick={addExercise}>
           Add Exercise
@@ -126,6 +136,7 @@ export default function CreateWorkout() {
                 <div>
                   <label className="block text-sm mb-1">Exercise</label>
                   <input
+                    list="exercise-options"
                     className="w-full p-2 rounded border dark:bg-gray-700"
                     value={ex.type}
                     onChange={e => updateExercise(idx, 'type', e.target.value)}
@@ -133,12 +144,12 @@ export default function CreateWorkout() {
                 </div>
                 <div className="grid grid-cols-3 gap-2">
                   <div>
-                    <label className="block text-sm mb-1">Sets</label>
+                    <label className="block text-sm mb-1">Eng</label>
                     <input
                       type="number"
                       className="w-full p-2 rounded border dark:bg-gray-700"
-                      value={ex.sets}
-                      onChange={e => updateExercise(idx, 'sets', parseInt(e.target.value, 10) || 0)}
+                      value={ex.eng}
+                      onChange={e => updateExercise(idx, 'eng', parseInt(e.target.value, 10) || 0)}
                     />
                   </div>
                   <div>
