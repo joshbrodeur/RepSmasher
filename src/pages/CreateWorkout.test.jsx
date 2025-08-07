@@ -12,7 +12,6 @@ vi.mock('../store.jsx', () => ({
 }));
 
 beforeEach(() => {
-  vi.useFakeTimers();
   mockStore = {
     routines: [],
     setRoutines: vi.fn(fn => {
@@ -24,11 +23,12 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();
-  vi.useRealTimers();
 });
 
 describe('CreateWorkout page', () => {
-  it('autosaves changes and navigates home on done', async () => {
+  it('prompts for name, saves on done, and navigates home', async () => {
+    const promptSpy = vi.spyOn(window, 'prompt').mockReturnValue('Leg Day');
+
     render(
       <MemoryRouter initialEntries={['/create']} future={future}>
         <Routes>
@@ -38,47 +38,35 @@ describe('CreateWorkout page', () => {
       </MemoryRouter>
     );
 
-    fireEvent.change(screen.getByPlaceholderText(/workout name/i), {
-      target: { value: 'Leg Day' },
-    });
-
-    await act(async () => {
-      vi.runAllTimers();
-    });
-
-    expect(mockStore.routines).toHaveLength(1);
-    expect(mockStore.routines[0]).toMatchObject({ name: 'Leg Day' });
+    expect(mockStore.routines).toHaveLength(0);
 
     await act(async () => {
       fireEvent.click(screen.getByText(/done/i));
     });
 
+    expect(promptSpy).toHaveBeenCalled();
+    expect(mockStore.routines).toHaveLength(1);
+    expect(mockStore.routines[0]).toMatchObject({ name: 'Leg Day' });
     expect(screen.getByText(/home page/i)).toBeInTheDocument();
   });
 
-  it('does not create duplicate routines on multiple autosaves', async () => {
+  it('does not save until done is pressed', async () => {
     render(
       <MemoryRouter initialEntries={['/create']} future={future}>
         <Routes>
           <Route path="/create" element={<CreateWorkout />} />
+          <Route path="/" element={<div />} />
         </Routes>
       </MemoryRouter>
     );
 
-    // Allow initial autosave to run
-    await act(async () => {
-      vi.runAllTimers();
-    });
+    fireEvent.click(screen.getByText(/add exercise/i));
+    expect(mockStore.routines).toHaveLength(0);
 
-    expect(mockStore.routines).toHaveLength(1);
-    expect(mockStore.routines[0]).toMatchObject({ name: 'Routine' });
-
-    fireEvent.change(screen.getByPlaceholderText(/workout name/i), {
-      target: { value: 'Leg Day' },
-    });
+    vi.spyOn(window, 'prompt').mockReturnValue('Leg Day');
 
     await act(async () => {
-      vi.runAllTimers();
+      fireEvent.click(screen.getByText(/done/i));
     });
 
     expect(mockStore.routines).toHaveLength(1);
