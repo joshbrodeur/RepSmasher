@@ -15,6 +15,7 @@ export default function Workout() {
   const [timer, setTimer] = useState(0);
   const [reps, setReps] = useState(0);
   const [weight, setWeight] = useState(0);
+  const [restLeft, setRestLeft] = useState(0);
 
   useEffect(() => {
     let t;
@@ -30,6 +31,20 @@ export default function Workout() {
       setReps(ex.reps || 0);
       setWeight(ex.weight || 0);
     }
+  }, [index, routine]);
+
+  useEffect(() => {
+    let interval;
+    if (routine) {
+      const ex = routine.exercises[index];
+      if (ex?.restSet) {
+        setRestLeft(ex.rest);
+        interval = setInterval(() => {
+          setRestLeft(prev => prev - 1);
+        }, 1000);
+      }
+    }
+    return () => clearInterval(interval);
   }, [index, routine]);
 
   function start() {
@@ -66,6 +81,7 @@ export default function Workout() {
   if (!routine) return <div className="max-w-md mx-auto">Routine not found.</div>;
 
   const ex = routine.exercises[index];
+  const total = routine.exercises.length;
 
   return (
     <div className="max-w-md mx-auto space-y-4">
@@ -77,10 +93,33 @@ export default function Workout() {
       )}
       {startTime && (
         <div className="space-y-4">
+          <div className="space-y-1">
+            <div
+              className="w-full bg-gray-200 rounded h-2"
+              role="progressbar"
+              aria-valuenow={index}
+              aria-valuemin="0"
+              aria-valuemax={total}
+            >
+              <div
+                className="bg-blue-600 h-2 rounded"
+                style={{ width: `${(index / total) * 100}%` }}
+              />
+            </div>
+            <p className="text-center text-sm text-gray-600">
+              {index}/{total} completed
+            </p>
+          </div>
           <p className="text-center">Time: {(timer / 1000).toFixed(0)}s</p>
           {ex.restSet ? (
             <div className="text-center space-y-2">
-              <h3 className="text-xl">Rest - {ex.rest}s</h3>
+              <h3 className="text-xl">Rest</h3>
+              <p
+                role="timer"
+                className={`text-3xl ${restLeft < 0 ? 'text-red-600' : ''}`}
+              >
+                {Math.abs(restLeft)}s
+              </p>
               <button className="p-2 bg-green-600 text-white rounded" onClick={() => next()}>
                 Continue
               </button>
