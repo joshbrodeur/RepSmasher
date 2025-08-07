@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { render, screen, fireEvent, cleanup } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup, act } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { MemoryRouter, Routes, Route } from 'react-router-dom';
 import Workout from './Workout.jsx';
@@ -30,6 +30,7 @@ beforeEach(() => {
 afterEach(() => {
   cleanup();
   vi.clearAllMocks();
+  vi.useRealTimers();
 });
 
 describe('Workout page', () => {
@@ -50,5 +51,52 @@ describe('Workout page', () => {
 
     expect(mockStore.workouts).toHaveLength(1);
     expect(mockStore.workouts[0].records[0]).toMatchObject({ type: 'Push Ups' });
+  });
+
+  it('shows progress as exercises are completed', () => {
+    mockStore.routines[0].exercises.push({ type: 'Sit Ups', reps: 0, weight: 0 });
+
+    render(
+      <MemoryRouter initialEntries={['/workout/r1']} future={future}>
+        <Routes>
+          <Route path="/workout/:id" element={<Workout />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByText(/start workout/i));
+    const progress = screen.getByRole('progressbar');
+    expect(progress).toHaveAttribute('aria-valuenow', '0');
+
+    fireEvent.click(screen.getByText(/done/i));
+
+    expect(progress).toHaveAttribute('aria-valuenow', '1');
+  });
+
+  it('counts down rest time and turns red when exceeded', () => {
+    vi.useFakeTimers();
+    mockStore.routines[0].exercises = [
+      { type: 'Rest', rest: 1, restSet: true },
+      { type: 'Push Ups', reps: 0, weight: 0 },
+    ];
+
+    render(
+      <MemoryRouter initialEntries={['/workout/r1']} future={future}>
+        <Routes>
+          <Route path="/workout/:id" element={<Workout />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    fireEvent.click(screen.getByText(/start workout/i));
+    const timer = screen.getByRole('timer');
+    expect(timer).toHaveTextContent('1s');
+    expect(timer).not.toHaveClass('text-red-600');
+
+    act(() => {
+      vi.advanceTimersByTime(2000);
+    });
+
+    expect(timer).toHaveClass('text-red-600');
   });
 });
